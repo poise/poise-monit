@@ -91,6 +91,7 @@ module PoiseMonit
             content new_resource.content
             group new_resource.parent.group if new_resource.parent.group
             mode '600'
+            notifies :reload, new_resource.parent, :immediately
             owner new_resource.parent.owner if new_resource.parent.owner
             verify "#{new_resource.parent.monit_binary} -t -c %{path}"
           end

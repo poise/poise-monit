@@ -35,8 +35,15 @@ module PoiseMonit
       def action_enable
         notifying_block do
           install_monit
+        end
+        # Split into two converges because we need to know what version is
+        # installed to write the config in some cases.
+        notifying_block do
           create_directory
           create_confd_directory
+          create_var_directory
+          create_events_directory
+          write_password_state if new_resource.httpd_password
           write_config
         end
         super
@@ -91,12 +98,42 @@ module PoiseMonit
         end
       end
 
+      # Create the /var/lib directory. This is used for the idfile, statefile,
+      # and events buffer.
+      def create_var_directory
+        directory new_resource.var_path do
+          group new_resource.group
+          mode '700'
+          owner new_resource.owner
+        end
+      end
+
+      # Create the events buffer directory.
+      def create_events_directory
+        directory ::File.join(new_resource.var_path, 'events') do
+          group new_resource.group
+          mode '700'
+          owner new_resource.owner
+        end
+      end
+
+      # Record the password for next time do we don't regenerate the config.
+      def write_password_state
+        file new_resource.password_path do
+          content new_resource.httpd_password
+          group new_resource.group
+          mode '600'
+          owner new_resource.owner
+        end
+      end
+
       # Write the primary config file for Monit.
       def write_config
         file new_resource.config_path do
           content new_resource.config_content
           group new_resource.group
           mode '600'
+          notifies :reload, new_resource, :immediately
           owner new_resource.owner
           verify "#{monit_binary} -t -c %{path}"
         end
@@ -104,7 +141,7 @@ module PoiseMonit
 
       # Configure properties for Monit service resource.
       def service_options(r)
-        r.command("#{monit_binary} -c #{new_resource.config_path} -I")
+        r.command("#{monit_binary} -c #{new_resource.config_path} -I -d #{new_resource.daemon_interval}")
         r.user(new_resource.owner)
       end
 
