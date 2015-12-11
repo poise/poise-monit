@@ -16,7 +16,7 @@
 
 require 'chef/platform/provider_priority_map'
 
-# require 'poise_monit/monit_providers/dummy'
+require 'poise_monit/monit_providers/dummy'
 require 'poise_monit/monit_providers/system'
 
 
