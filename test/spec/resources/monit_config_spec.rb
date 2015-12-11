@@ -29,4 +29,15 @@ describe PoiseMonit::Resources::MonitConfig do
 
     it { is_expected.to render_file('/etc/monit/conf.d/httpd.conf').with_content('check process httpd') }
   end # /context action :create
+
+  context 'action :delete' do
+    recipe do
+      monit 'monit'
+      monit_config 'httpd' do
+        action :delete
+      end
+    end
+
+    it { is_expected.to delete_file('/etc/monit/conf.d/httpd.conf') }
+  end # /context action :delete
 end
