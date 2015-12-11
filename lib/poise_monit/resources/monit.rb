@@ -45,33 +45,90 @@ module PoiseMonit
         provides(:monit)
         include PoiseService::ServiceMixin
 
+        # @!attribute config
+        #   Template content resource for the Monit configuration file.
         attribute(:config, template: true, default_source: 'monit.conf.erb')
+        # @!attribute daemon_interval
+        #   Number of seconds between service checks. Defaults to 120 seconds.
+        #   @return [Integer]
         attribute(:daemon_interval, kind_of: Integer, default: 120)
+        # @!attribute event_slots
+        #   Number of slots in the Monit event buffer. Set to 0 to disable
+        #   event buffering, or -1 for an unlimited queue. Defaults to 100.
+        #   @return [Integer]
         attribute(:event_slots, kind_of: Integer, default: 100)
+        # @!attribute httpd_port
+        #   Port to listen on for Monit's HTTPD. If a path is specified, it is
+        #   used as a Unix socket path. If set to nil or false, no HTTPD
+        #   configuration is generated. This may break some other poise-monit
+        #   resources. Default is a Unix socket if the version of Monit supports
+        #   it, otherwise 2812.
+        #   @return [String, Integer, nil, false]
         attribute(:httpd_port, kind_of: [String, Integer, NilClass, FalseClass], default: lazy { default_httpd_port })
+        # @!attribute httpd_password
+        #   Cleartext password for authentication between the Monit daemon and
+        #   CLI. Set to nil or false to disable authentication. Default is nil
+        #   for Unix socket connections and auto-generated otherwise.
+        #   @return [String, nil, false]
         attribute(:httpd_password, kind_of: [String, NilClass, FalseClass], default: lazy { default_httpd_password })
-        attribute(:httpd_username, kind_of: [String, NilClass, FalseClass], default: 'cli')
+        # @!attribute httpd_username
+        #   Username for authentication between the Monit daemon and CLI.
+        #   Default is cli.
+        #   @return [String]
+        attribute(:httpd_username, kind_of: String, default: 'cli')
+        # @!attribute group
+        #   System group to deploy Monit as.
+        #   @return [String, nil, false]
         attribute(:group, kind_of: [String, NilClass, FalseClass], default: nil)
-        attribute(:logfile, kind_of: [String, NilClass, FalseClass], default: '/var/log/monit.')
+        # @!attribute logfile
+        #   Path to the Monit log file. Default is /var/log/monit.log.
+        #   @return [String, nil, false]
+        attribute(:logfile, kind_of: [String, NilClass, FalseClass], default: lazy { default_logfile })
+        # @!attribute group
+        #   System user to deploy Monit as.
+        #   @return [String, nil, false]
         attribute(:owner, kind_of: [String, NilClass, FalseClass], default: nil)
+        # @!attribute path
+        #   Path to the Monit configuration directory. Default is /etc/monit.
+        #   @return [String]
         attribute(:path, kind_of: String, default: lazy { default_path })
+        # @!attribute pidfile
+        #   Path to the Monit PID file. Default is /var/run/monit.pid.
+        #   @return [String]
         attribute(:pidfile, kind_of: String, default: lazy { default_pidfile })
+        # @!attribute var_path
+        #   Path the Monit state directory. Default is /var/lib/monit.
+        #   @return [String]
         attribute(:var_path, kind_of: String, default: lazy { default_var_path })
+        # @!attribute version
+        #   Version of Monit to install.
+        #   @return [String, nil, false]
         attribute(:version, kind_of: [String, NilClass, FalseClass], default: nil)
 
-        # @!attribute [r] Path to the conf.d/ directory.
+        # @!attribute [r] confd_path
+        #   Path to the conf.d/ directory.
+        #   @return [String]
         def confd_path
           ::File.join(path, 'conf.d')
         end
 
+        # @!attribute [r] config_path
+        #   Path to the Monit configuration file.
+        #   @return [String]
         def config_path
           ::File.join(path, 'monitrc')
         end
 
+        # @!attribute [r] password_path
+        #   Path to the CLI password state tracking file.
+        #   @return [String]
         def password_path
-          ::File.join(path, '.cli-password')
+          ::File.join(var_path, '.cli-password')
         end
 
+        # @!attribute [r] httpd_is_unix?
+        #   Are we using a Unix socket or TCP socket for Monit's HTTPD?
+        #   @return [Boolean]
         def httpd_is_unix?
           httpd_port.to_s[0] == '/'
         end
