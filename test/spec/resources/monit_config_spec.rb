@@ -18,17 +18,10 @@ require 'spec_helper'
 
 describe PoiseMonit::Resources::MonitConfig do
   step_into(:monit_config)
-  before do
-    default_attributes['poise-monit'] ||= {}
-    # TODO update this when I write a dummy provider.
-    default_attributes['poise-monit']['provider'] = 'system'
-  end
 
   context 'action :create' do
     recipe do
-      monit 'monit' do
-        provider :system # REMOVE THIS
-      end
+      monit 'monit'
       monit_config 'httpd' do
         content 'check process httpd'
       end
