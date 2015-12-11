@@ -10,7 +10,7 @@ SET LOGFILE <%= @new_resource.logfile %>
 SET IDFILE <%= @new_resource.var_path %>/id
 SET STATEFILE <%= @new_resource.var_path %>/state
 <%- if @new_resource.event_slots && @new_resource.event_slots != 0 -%>
-SET EVENTQUEUE BASEDIR <%= @new_resource.var_path %>/events <% if @new_resource.event_slots > 0 %>SLOTS <%= @new_resource.event_slots %><% end %>
+SET EVENTQUEUE BASEDIR <%= @new_resource.var_path %>/events<% if @new_resource.event_slots > 0 %> SLOTS <%= @new_resource.event_slots %><% end %>
 <%- end -%>
 <%- end -%>
 
