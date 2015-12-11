@@ -53,7 +53,12 @@ module PoiseMonit
       #
       # @return [void]
       def action_disable
-        super # TODO
+        super
+        notifying_block do
+          uninstall_monit
+          delete_directory
+          delete_var_directory
+        end
       end
 
       # Return the path to the Monit binary. Must be implemented by subclasses.
@@ -136,6 +141,22 @@ module PoiseMonit
           notifies :reload, new_resource, :immediately
           owner new_resource.owner
           verify "#{monit_binary} -t -c %{path}"
+        end
+      end
+
+      # Delete the configuration directory for Monit.
+      def delete_directory
+        create_directory.tap do |r|
+          r.action(:delete)
+          r.recursive(true)
+        end
+      end
+
+      # Delete the state directory for Monit.
+      def delete_var_directory
+        create_var_directory.tap do |r|
+          r.action(:delete)
+          r.recursive(true)
         end
       end
 
