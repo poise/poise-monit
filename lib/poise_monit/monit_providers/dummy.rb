@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+require 'poise_service/service_providers/dummy'
+
 require 'poise_monit/monit_providers/base'
 
 
