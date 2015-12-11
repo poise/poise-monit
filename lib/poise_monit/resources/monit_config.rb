@@ -99,8 +99,9 @@ module PoiseMonit
 
         # Remove the config file.
         def delete_config
-          create_config.tap do |r|
-            r.action(:delete)
+          file new_resource.path do
+            action :delete
+            notifies :reload, new_resource.parent, :immediately
           end
         end
 
