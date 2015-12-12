@@ -11,6 +11,159 @@ A [Chef](https://www.chef.io/) cookbook to manage [Monit](https://mmonit.com/mon
 
 *MORE INFO COMING SOON*.
 
+## Quick Start
+
+To install Monit and configure a mail server:
+
+```ruby
+include_recipe 'monit'
+
+monit_config 'mailconfig' do
+  content <<-EOH
+SET MAILSERVER mail.example.com
+SET ALERT devoops@example.com
+EOH
+end
+```
+
+To create a service managed by Monit with a health check:
+
+```ruby
+poise_service 'apache2' do
+  command '/usr/sbin/apache2 -f /etc/apache2/apache2.conf -DFOREGROUND'
+  stop_signal 'WINCH'
+  reload_signal 'USR1'
+  provider :monit
+  options :monit, checks: 'if failed host localhost port 80 protocol HTTP request "/" then restart'
+end
+```
+
+## Resources
+
+### `monit`
+
+The `monit` resource installs and configures Monit.
+
+```ruby
+monit 'monit' do
+  daemon_interval 60
+  event_slots 1000
+end
+```
+
+#### Actions
+
+* `:enable` – Install, enable and start Monit. *(default)*
+* `:disable` – Stop, disable, and uninstall Monit.
+* `:start` – Start Monit.
+* `:stop` – Stop Monit.
+* `:restart` – Stop and then start Monit.
+* `:reload` – Send SIGHUP signal to Monit.
+
+#### Properties
+
+* `service_name` – Name of the Monit instance. *(name attribute)*
+* `daemon_interval` – Number of seconds between service checks. *(default: 120)*
+* `event_slots` – Number of slots in the Monit event buffer. Set to 0 to disable
+  event buffering, or -1 for an unlimited queue. *(default: 100)*
+* `httpd_port` – Port to listen on for Monit's HTTPD. If a path is specified, it
+  is used as a Unix socket path. If set to nil or false, no HTTPD configuration
+  is generated. This may break some other poise-monit resources. *(default:
+  /var/run/monit.sock if the version of Monit supports it, otherwise 2812)*
+* `httpd_password` – Cleartext password for authentication between the Monit
+  daemon and CLI. Set to nil or false to disable authentication. *(default: nil
+  for Unix socket connections, otherwise auto-generated)*
+* `httpd_username` – Username for authentication between the Monit daemon and
+  CLI. *(default: cli)*
+* `group` – System group to deploy Monit as.
+* `logfile` – Path to the Monit log file. *(default: /var/log/monit.log)*
+* `owner` – System user to deploy Monit as.
+* `path` – Path to the Monit configuration directory. *(default: /etc/monit)*
+* `pidfile` – Path to the Monit PID file. *(default: /var/run/monit.pid)*
+* `var_path` – Path the Monit state directory. *(default: /var/lib/monit)*
+* `version` – Version of Monit to install.
+
+#### Provider Options
+
+The `monit` resource uses provide options for per-provider configuration. See
+[the poise-service documentation](https://github.com/poise/poise-service#service-options)
+for more information on using provider options.
+
+### `monit_config`
+
+The `monit_config` resource writes out a Monit configuration file to the
+`conf.d/` directory.
+
+```ruby
+monit_config 'ssh' do
+  source 'monit_ssh.conf.erb'
+  variables threshold: 5
+end
+```
+
+#### Actions
+
+* `:create` – Create and manage the configuration file. *(default)*
+* `:delete` – Delete the configuration file.
+
+#### Properties
+
+* `config_name` – Name of the configuration file. *(name attribute)*
+* `content` – File content to write.
+* `cookbook` – Cookbook to search for `source` in.
+* `parent` – Name or reference for the parent `monit` resource. *(required, default: automatic)*
+* `path` – Path to the configuration file. *(default: automatic)*
+* `source` – Template path to render.
+* `variables` – Template variables.
+
+One of `source` or `content` is required.
+
+## Monit Providers
+
+### `binaries`
+
+*Coming soon!*
+
+### `system`
+
+The `system` provider supports installing Monit from system packages. This will
+use EPEL for RHEL/CentOS as they do not ship Monit in the base OS repositories.
+
+```ruby
+monit 'monit' do
+  provider :system
+end
+```
+
+### `dummy`
+
+The `dummy` provider supports using the `monit` resource with ChefSpec or other
+testing frameworks to not actually install Monit. It is used by default under
+ChefSpec.
+
+```ruby
+monit 'monit' do
+  provider :dummy
+end
+```
+
+## Service Provider
+
+The `monit` service provider is included to allow [`poise_service` resources](https://github.com/poise/poise-service)
+to use Monit as the service manager. This uses the normal `sysvinit` provider
+from `poise-service` to generate the init scripts, but manages service state
+through Monit.
+
+```ruby
+poise_service 'apache2' do
+  command '/usr/sbin/apache2 -f /etc/apache2/apache2.conf -DFOREGROUND'
+  stop_signal 'WINCH'
+  reload_signal 'USR1'
+  provider :monit
+  options :monit, checks: 'if failed host localhost port 80 protocol HTTP request "/" then restart'
+end
+```
+
 ## Sponsors
 
 Development sponsored by [Bloomberg](http://www.bloomberg.com/company/technology/).
