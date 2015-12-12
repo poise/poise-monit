@@ -14,11 +14,13 @@
 # limitations under the License.
 #
 
+require 'poise_monit/service_providers/monit'
+
 
 module PoiseMonit
-  autoload :Error, 'poise_monit/error'
-  autoload :MonitProviders, 'poise_monit/monit_providers'
-  autoload :Resources, 'poise_monit/resources'
-  autoload :ServiceProviders, 'poise_monit/service_providers'
-  autoload :VERSION, 'poise_monit/version'
+  # Providers for `poise_service`.
+  #
+  # @since 1.0.0
+  module ServiceProviders
+  end
 end

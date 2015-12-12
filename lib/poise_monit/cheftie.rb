@@ -16,3 +16,4 @@
 
 require 'poise_monit/resources'
 require 'poise_monit/monit_providers'
+require 'poise_monit/service_providers'
