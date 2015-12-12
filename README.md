@@ -9,8 +9,6 @@
 
 A [Chef](https://www.chef.io/) cookbook to manage [Monit](https://mmonit.com/monit/).
 
-*MORE INFO COMING SOON*.
-
 ## Quick Start
 
 To install Monit and configure a mail server:
