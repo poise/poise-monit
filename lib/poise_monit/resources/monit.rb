@@ -84,7 +84,7 @@ module PoiseMonit
         #   Path to the Monit log file. Default is /var/log/monit.log.
         #   @return [String, nil, false]
         attribute(:logfile, kind_of: [String, NilClass, FalseClass], default: lazy { default_logfile })
-        # @!attribute group
+        # @!attribute owner
         #   System user to deploy Monit as.
         #   @return [String, nil, false]
         attribute(:owner, kind_of: [String, NilClass, FalseClass], default: nil)
