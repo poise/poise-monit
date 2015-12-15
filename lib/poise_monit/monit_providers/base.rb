@@ -43,7 +43,8 @@ module PoiseMonit
           create_confd_directory
           create_var_directory
           create_events_directory
-          write_password_state if new_resource.httpd_password
+          # Only write out a state if we are actually going to use it.
+          write_password_state if new_resource.httpd_port && new_resource.httpd_password
           write_config
         end
         super
