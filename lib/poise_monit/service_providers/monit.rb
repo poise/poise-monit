@@ -54,8 +54,9 @@ module PoiseMonit
         _options = options
         _pid_file = pid_file
         monit_config new_resource.service_name do
-          template 'monit_service.conf.erb'
-          options service_resource: new_resource, options: _options, pid_file: _pid_file
+          cookbook 'poise-monit'
+          source 'monit_service.conf.erb'
+          variables service_resource: new_resource, options: _options, pid_file: _pid_file
           # Don't trigger a restart if the template doesn't already exist, this
           # prevents restarting on the run that first creates the service.
           restart_on_update = _options.fetch('restart_on_update', new_resource.restart_on_update)
