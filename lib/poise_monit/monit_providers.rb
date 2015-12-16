@@ -17,6 +17,7 @@
 require 'chef/platform/provider_priority_map'
 
 require 'poise_monit/monit_providers/binaries'
+require 'poise_monit/monit_providers/binaries_bitbucket'
 require 'poise_monit/monit_providers/dummy'
 require 'poise_monit/monit_providers/system'
 
@@ -28,6 +29,7 @@ module PoiseMonit
   module MonitProviders
     # Set up priority maps
     Chef::Platform::ProviderPriorityMap.instance.priority(:monit, [
+      PoiseMonit::MonitProviders::BinariesBitBucket,
       PoiseMonit::MonitProviders::Binaries,
       PoiseMonit::MonitProviders::System,
     ])
