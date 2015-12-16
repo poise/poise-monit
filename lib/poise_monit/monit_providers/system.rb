@@ -22,10 +22,16 @@ require 'poise_monit/monit_providers/base'
 
 module PoiseMonit
   module MonitProviders
+    # A `system` provider for `monit` to install from system packages. Uses
+    # EPEL for RHEL-family platforms.
+    #
+    # @see PoiseMonit::Resources::PoiseMonit::Resource
+    # @provides monit
     class System < Base
       provides(:system)
 
-      # Enable by default on Debian-oids.
+      # Enable by default on Debian-oids. Doesn't really matter given that
+      # binaries outranks this provider.
       #
       # @api private
       def self.provides_auto?(node, _resource)
@@ -36,7 +42,7 @@ module PoiseMonit
       #
       # @return [String]
       def monit_binary
-        # Until I run into a counter example, probably always true.
+        # Until I run into a counter-example, probably always true.
         '/usr/bin/monit'
       end
 
