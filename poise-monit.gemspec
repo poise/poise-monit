@@ -40,5 +40,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'poise-boiler', '~> 1.0'
 
-  spec.metadata['halite_dependencies'] = 'yum-epel'
+  # Leaving this hear but commented so it is clear this dependency has been
+  # removed on purpose. It's going to be a rare thing, so don't pull it in.
+  # spec.metadata['halite_dependencies'] = 'yum-epel'
 end

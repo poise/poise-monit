@@ -49,7 +49,13 @@ module PoiseMonit
       private
 
       def install_monit
-        include_recipe 'yum-epel' if node.platform_family?('rhel')
+        if node.platform_family?('rhel') && !options['no_epel']
+          # require 'pry'; binding.pry;
+          if run_context.unreachable_cookbook?('yum-epel')
+            raise Chef::Exceptions::RecipeNotFound.new('Could not find recipe yum-epel. Please include it either on your run list or via a metadata.rb depends to install on RHEL or CentOS')
+          end
+          include_recipe 'yum-epel'
+        end
 
         # We're taking care of the init system.
         init_file = file '/etc/init.d/monit' do
