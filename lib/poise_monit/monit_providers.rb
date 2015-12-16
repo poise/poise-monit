@@ -27,7 +27,7 @@ module PoiseMonit
   # @since 1.0.0
   module MonitProviders
     # Set up priority maps
-    Chef::Platform::ProviderPriorityMap.instance.priority(:poise_monit, [
+    Chef::Platform::ProviderPriorityMap.instance.priority(:monit, [
       PoiseMonit::MonitProviders::Binaries,
       PoiseMonit::MonitProviders::System,
     ])
