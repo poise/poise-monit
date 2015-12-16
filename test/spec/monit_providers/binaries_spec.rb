@@ -16,7 +16,7 @@
 
 require 'spec_helper'
 
-describe PoiseMonit::MonitProviders::Binaries, :focus do
+describe PoiseMonit::MonitProviders::Binaries do
   let(:monit_version) { nil }
   let(:chefspec_options) { {platform: 'ubuntu', version: '14.04'} }
   let(:default_attributes) { {poise_monit_version: monit_version} }
@@ -44,6 +44,17 @@ describe PoiseMonit::MonitProviders::Binaries, :focus do
     let(:monit_version) { '5.14' }
     it_behaves_like 'binaries provider', 'monit-5.14', 'https://mmonit.com/monit/dist/binary/5.14/monit-5.14-linux-x64.tar.gz'
   end # /context with version 5.14
+
+  context 'with version 5.9 and no forced provider' do
+    recipe do
+      monit 'monit' do
+        httpd_port false
+        version '5.9'
+      end
+    end
+
+    it_behaves_like 'binaries provider', 'monit-5.9', 'https://mmonit.com/monit/dist/binary/5.9/monit-5.9-linux-x64.tar.gz'
+  end # /context with version 5.9 and no forced provider
 
   context 'on CentOS 7' do
     let(:chefspec_options) { {platform: 'centos', version: '7.0'} }
