@@ -21,6 +21,11 @@ require 'poise_monit/monit_providers/base'
 
 module PoiseMonit
   module MonitProviders
+    # A `binaries` provider for `monit` to install from static binaries hosted
+    # at mmonit.com.
+    #
+    # @see PoiseMonit::Resources::PoiseMonit::Resource
+    # @provides monit
     class Binaries < Base
       provides(:binaries)
       include PoiseLanguages::Static(
@@ -30,6 +35,7 @@ module PoiseMonit
         url: 'https://mmonit.com/monit/dist/binary/%{version}/monit-%{version}-%{machine_label}.tar.gz',
       )
 
+      # Translation lookup for Chef/Ohai machine types vs. Monit packages.
       MACHINE_ALIASES = {
         # Linux.
         'amd64' => 'x64',
@@ -45,13 +51,23 @@ module PoiseMonit
         'sun4us' => 'sparc',
       }
 
+      # Allow anything we have a build for.
+      #
+      # @api private
+      def self.provides_auto?(node, resource)
+        static_machines.include?(static_machine_label(node))
+      end
+
+      # Compute the machine label in the format Monit uses.
+      #
+      # @api private
       def self.static_machine_label(node)
         # Get the machine type in the format Monit uses.
-        raw_machine = node['kernel']['machine'].downcase
+        raw_machine = (node['kernel']['machine'] || 'unknown').downcase
         machine = MACHINE_ALIASES.fetch(raw_machine, raw_machine)
 
         # And then the OS type.
-        raw_kernel = node['kernel']['name'].downcase
+        raw_kernel = (node['kernel']['name'] || 'unknown').downcase
         kernel = case raw_kernel
         when 'aix'
           "aix#{node['kernel']['version']}.#{node['kernel']['release']}"
@@ -68,16 +84,19 @@ module PoiseMonit
         "#{kernel}-#{machine}"
       end
 
+      # (see Base#monit_binary)
       def monit_binary
         ::File.join(static_folder, 'bin', 'monit')
       end
 
       private
 
+      # (see Base#install_monit)
       def install_monit
         install_static
       end
 
+      # (see Base#uninstall_monit)
       def uninstall_monit
         uninstall_static
       end
