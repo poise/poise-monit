@@ -53,7 +53,20 @@ module PoiseMonit
         # Scope closureeeeeee.
         _options = options
         _pid_file = pid_file
+        _self = self
         monit_config new_resource.service_name do
+          # Make sure we have a parent.
+          if _options['parent']
+            parent _options['parent']
+          else
+            begin
+              # Try to find a default parent, trigger an exception if not.
+              parent
+            rescue Poise::Error
+              # Use the default recipe to give us a parent.
+              _self.include_recipe('poise-monit')
+            end
+          end
           cookbook 'poise-monit'
           source 'monit_service.conf.erb'
           variables service_resource: new_resource, options: _options, pid_file: _pid_file
