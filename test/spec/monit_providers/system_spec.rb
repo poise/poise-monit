@@ -50,15 +50,14 @@ describe PoiseMonit::MonitProviders::System do
       end
       it_behaves_like 'system provider'
     end # /context with EPEL stubbed out
-  end # /context on CentOS
 
-  context 'on CentOS without EPEL' do
-    let(:chefspec_options) { {platform: 'CentOS', version: '7.0'} }
-    before do
-      default_attributes['poise-monit'] = {monit: {no_epel: true}}
-    end
-    it_behaves_like 'system provider'
-  end # /context on CentOS without EPEL
+    context 'without EPEL' do
+      before do
+        default_attributes['poise-monit'] = {monit: {no_epel: true}}
+      end
+      it_behaves_like 'system provider'
+    end # /context without EPEL
+  end # /context on CentOS
 
   context 'action :disable' do
     recipe do
