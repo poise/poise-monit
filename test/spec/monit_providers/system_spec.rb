@@ -40,7 +40,7 @@ describe PoiseMonit::MonitProviders::System do
   end # /context on Ubuntu
 
   context 'on CentOS' do
-    let(:chefspec_options) { {platform: 'CentOS', version: '7.0'} }
+    let(:chefspec_options) { {platform: 'centos', version: '7.0'} }
     it { expect { chef_run }.to raise_error(Chef::Exceptions::RecipeNotFound) }
 
     context 'with EPEL stubbed out' do
