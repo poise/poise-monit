@@ -14,4 +14,18 @@
 # limitations under the License.
 #
 
-include_recipe 'poise-monit'
+require 'poise_monit/resources/monit_test'
+
+monit_test 'monit'
+
+monit_test 'system' do
+  monit_provider :system
+end
+
+monit_test 'binaries' do
+  monit_provider :binaries
+end
+
+monit_test 'binaries_bitbucket' do
+  monit_provider :binaries_bitbucket
+end
