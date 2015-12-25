@@ -45,7 +45,7 @@ describe PoiseMonit::MonitProviders::System do
 
     context 'with EPEL stubbed out' do
       before do
-        expect_any_instance_of(Chef::RunContext).to receive(:unreachable_cookbook?).with('yum-epel').and_return(false)
+        expect_any_instance_of(Chef::RunContext).to receive(:unreachable_cookbook?).with(:'yum-epel').and_return(false)
         expect_any_instance_of(described_class).to receive(:include_recipe).with('yum-epel')
       end
       it_behaves_like 'system provider'
