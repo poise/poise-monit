@@ -28,19 +28,52 @@ module PoiseMonit
     class Monit < PoiseService::ServiceProviders::Sysvinit
       provides(:monit)
 
-      def action_start
-      end
-
-      def action_stop
-      end
-
-      def action_restart
-      end
-
+      # Override the default reload action because monit_service doesn't
+      # support reload itself.
       def action_reload
+        return if options['never_reload']
+        if running?
+          converge_by("reload service #{new_resource}") do
+            Process.kill(new_resource.reload_signal, pid)
+            Chef::Log.info("#{new_resource} reloaded")
+          end
+        end
       end
 
       private
+
+      def service_resource
+        @service_resource ||= PoiseMonit::Resources::MonitService::Resource.new(new_resource.service_name, run_context).tap do |r|
+          # Set standard resource parameters
+          r.enclosing_provider = self
+          r.source_line = new_resource.source_line
+          # Make sure we have a parent.
+          if options['parent']
+            r.parent options['parent']
+          else
+            begin
+              # Try to find a default parent, trigger an exception if not.
+              r.parent
+            rescue Poise::Error
+              # Use the default recipe to give us a parent the next time we ask.
+              include_recipe('poise-monit')
+            end
+          end
+          # Set some params on the service resource.
+          r.init_command(script_path)
+          # Mild encapulsation break, this is an internal detail of monit_config. :-/
+          r.monit_config_path(::File.join(r.parent.confd_path, "#{new_resource.service_name}.conf"))
+        end
+      end
+
+      def running?
+        begin
+          # Check if the PID is running.
+          pid && Process.kill(0, pid)
+        rescue Errno::ESRCH
+          false
+        end
+      end
 
       # Patch Monit behavior in to service creation.
       def create_service
@@ -53,23 +86,13 @@ module PoiseMonit
         # Scope closureeeeeee.
         _options = options
         _pid_file = pid_file
-        _self = self
+        _parent = service_resource.parent
+        _script_path = script_path
         monit_config new_resource.service_name do
-          # Make sure we have a parent.
-          if _options['parent']
-            parent _options['parent']
-          else
-            begin
-              # Try to find a default parent, trigger an exception if not.
-              parent
-            rescue Poise::Error
-              # Use the default recipe to give us a parent.
-              _self.include_recipe('poise-monit')
-            end
-          end
           cookbook 'poise-monit'
+          parent _parent
           source 'monit_service.conf.erb'
-          variables service_resource: new_resource, options: _options, pid_file: _pid_file
+          variables service_resource: new_resource, options: _options, pid_file: _pid_file, script_path: _script_path
           # Don't trigger a restart if the template doesn't already exist, this
           # prevents restarting on the run that first creates the service.
           restart_on_update = _options.fetch('restart_on_update', new_resource.restart_on_update)
@@ -88,25 +111,12 @@ module PoiseMonit
 
       # Delete the Monit configuration file.
       def delete_monit_config
-        create_monit_config.tap do |r|
-          r.action(:delete)
+        _parent = service_resource.parent
+        monit_config new_resource.service_name do
+          action :delete
+          parent _parent
         end
       end
-
-      # This space left intentionally blank.
-      def enable_service
-      end
-
-      # This space left intentionally blank.
-      def disable_service
-      end
-
-      # Find the parent `monit` resource, creating it if needed.
-      #
-      # @api private
-      # @return [PoiseMonit]
-      # def monit_parent
-      #   @monit_parent ||= begin
 
     end
   end

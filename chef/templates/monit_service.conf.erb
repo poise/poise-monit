@@ -1,6 +1,6 @@
 check process <%= @service_resource.service_name %> with pidfile <%= @pid_file %>
-  start program = "/etc/init.d/<%= @service_resource.service_name %> start"
-  stop program = "/etc/init.d/<%= @service_resource.service_name %> stop"
+  start program = "<%= @script_path %> start"
+  stop program = "<%= @script_path %> stop"
   <%- Array(@options['checks']).each do |line| -%>
   <%= line.rstrip %>
   <%- end -%>
