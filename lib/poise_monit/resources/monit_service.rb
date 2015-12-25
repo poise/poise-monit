@@ -125,7 +125,7 @@ module PoiseMonit
           monit_shell_out!('restart')
         end
 
-        def monit_shell_out!(monit_cmd, timeout: 15, wait: 1, wait_for_output: nil, allowed_fail: nil)
+        def monit_shell_out!(monit_cmd, timeout: 20, wait: 1, wait_for_output: nil, allowed_fail: nil)
           while true
             cmd = shell_out([new_resource.parent.monit_binary, '-c', new_resource.parent.config_path, monit_cmd, new_resource.service_name])
             # Check if we had an error, but allow errors with specific strings
