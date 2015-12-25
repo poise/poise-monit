@@ -64,6 +64,9 @@ module PoiseMonit
 
         package 'monit' do
           notifies :delete, init_file, :immediately
+          if node.platform_family?('debian')
+            options '-o Dpkg::Options::=--path-exclude=/etc/*'
+          end
           version new_resource.version
         end
       end
