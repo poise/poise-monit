@@ -17,8 +17,10 @@
 require 'serverspec'
 set :backend, :exec
 
+require 'poise_service/spec_helper'
+
 # Set up the shared example for monit_test.
-RSpec.shared_examples 'a monit_test' do |monit_name|
+RSpec.shared_examples 'a monit_test' do |monit_name, base_port|
   let(:monit_name) { monit_name }
   let(:monit_path) { File.join('', 'root', "monit_test_#{monit_name}") }
   # Helper for all the file checks.
@@ -39,20 +41,22 @@ RSpec.shared_examples 'a monit_test' do |monit_name|
   assert_file('status') do
     # its(:content) { is_expected.to start_with version } if version
   end
+
+  it_should_behave_like 'a poise_service_test', 'monit_'+monit_name, base_port, false
 end
 
 describe 'default' do
-  it_should_behave_like 'a monit_test', 'monit'
+  it_should_behave_like 'a monit_test', 'monit', 5000
 end
 
 describe 'system provider', unless: File.exist?('/no_system') do
-  it_should_behave_like 'a monit_test', 'system'
+  it_should_behave_like 'a monit_test', 'system', 6000
 end
 
 describe 'binaries provider', unless: File.exist?('/no_binaries') do
-  it_should_behave_like 'a monit_test', 'binaries'
+  it_should_behave_like 'a monit_test', 'binaries', 7000
 end
 
 describe 'binaries_bitbucket provider', unless: File.exist?('/no_binaries_bitbucket') do
-  it_should_behave_like 'a monit_test', 'binaries_bitbucket'
+  it_should_behave_like 'a monit_test', 'binaries_bitbucket', 8000
 end

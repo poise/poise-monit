@@ -50,6 +50,10 @@ module PoiseMonit
         #   Path for writing files for this test group.
         #   @return [String]
         attribute(:path, kind_of: String, default: lazy { "/root/monit_test_#{name}" })
+        # @!attribute base_port
+        #   Port number to start from for the test group.
+        #   @return [Integer]
+        attribute(:base_port, kind_of: Integer)
       end
 
       # Provider for `monit_test`.
@@ -81,7 +85,11 @@ module PoiseMonit
             execute "#{r.monit_binary} status -c '#{r.config_path}' > #{new_resource.path}/status"
 
             # Run poise_service_test for the service provider.
-            # TODO
+            poise_service_test "monit_#{new_resource.name}" do
+              base_port new_resource.base_port
+              service_provider :monit
+              service_options 'parent' => r
+            end
           end
         end
 

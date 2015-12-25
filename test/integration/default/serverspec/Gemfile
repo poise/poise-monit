@@ -14,23 +14,6 @@
 # limitations under the License.
 #
 
-require 'poise_monit/resources/monit_test'
+source 'https://rubygems.org/'
 
-monit_test 'monit' do
-  base_port 5000
-end
-
-monit_test 'system' do
-  base_port 6000
-  monit_provider :system
-end
-
-monit_test 'binaries' do
-  base_port 7000
-  monit_provider :binaries
-end
-
-monit_test 'binaries_bitbucket' do
-  base_port 8000
-  monit_provider :binaries_bitbucket
-end
+gem 'poise-service-spechelper'
