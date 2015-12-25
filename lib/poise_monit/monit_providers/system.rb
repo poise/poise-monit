@@ -50,7 +50,6 @@ module PoiseMonit
 
       def install_monit
         if node.platform_family?('rhel') && !options['no_epel']
-          # require 'pry'; binding.pry;
           if run_context.unreachable_cookbook?('yum-epel')
             raise Chef::Exceptions::RecipeNotFound.new('Could not find recipe yum-epel. Please include it either on your run list or via a metadata.rb depends to install on RHEL or CentOS')
           end
