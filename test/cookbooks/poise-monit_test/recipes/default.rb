@@ -25,10 +25,10 @@ monit_test 'system' do
   monit_provider :system
 end
 
-monit_test 'binaries' do
-  base_port 7000
-  monit_provider :binaries
-end
+# monit_test 'binaries' do
+#   base_port 7000
+#   monit_provider :binaries
+# end
 
 monit_test 'binaries_bitbucket' do
   base_port 8000

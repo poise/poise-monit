@@ -53,9 +53,9 @@ describe 'system provider', unless: File.exist?('/no_system') do
   it_should_behave_like 'a monit_test', 'system', 6000
 end
 
-describe 'binaries provider', unless: File.exist?('/no_binaries') do
-  it_should_behave_like 'a monit_test', 'binaries', 7000
-end
+# describe 'binaries provider', unless: File.exist?('/no_binaries') do
+#   it_should_behave_like 'a monit_test', 'binaries', 7000
+# end
 
 describe 'binaries_bitbucket provider', unless: File.exist?('/no_binaries_bitbucket') do
   it_should_behave_like 'a monit_test', 'binaries_bitbucket', 8000
