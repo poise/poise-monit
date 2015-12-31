@@ -118,14 +118,42 @@ One of `source` or `content` is required.
 
 ## Monit Providers
 
+### `binaries_bitbucket`
+
+The `binaries_bitbucket` provider supports installing Monit from static binaries
+mirrored to BitBucket. Only a few of the recent releases are mirrored, but these
+downloads are more reliable than from `mmonit.com`. This is the default provider
+if you are installing a version available from BitBucket.
+
+```ruby
+monit 'monit' do
+  provider :binaries_bitbucket
+  version '5.15'
+end
+```
+
 ### `binaries`
 
-*Coming soon!*
+The `binaries` provider supports installing Monit from static binaries hosted on
+`mmonit.com`. This server uses a very strict download count quota per IP, so
+expect 500 errors if aren't careful. This is the default if you
+
+```ruby
+monit 'monit' do
+  provider :binaries
+  version '5.9'
+end
+```
+
+**NOTE:** Due to the download quotas, this provider is not currently being tested.
 
 ### `system`
 
-The `system` provider supports installing Monit from system packages. This will
-use EPEL for RHEL/CentOS as they do not ship Monit in the base OS repositories.
+The `system` provider supports installing Monit from system packages. This
+requires EPEL for RHEL/CentOS as they do not ship Monit in the base OS
+repositories. Because this is not a default provider, EPEL is *not* a dependency
+of this cookbook, you will have to add it to your run list or as a dependency of
+a wrapper cookbook.
 
 ```ruby
 monit 'monit' do
@@ -161,6 +189,8 @@ poise_service 'apache2' do
   options :monit, checks: 'if failed host localhost port 80 protocol HTTP request "/" then restart'
 end
 ```
+
+To set the `monit` provider as the global default, use [`poise-sevice-monit`](https://github.com/poise/poise-service-monit).
 
 ## Sponsors
 
