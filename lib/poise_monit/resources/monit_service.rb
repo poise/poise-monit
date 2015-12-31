@@ -25,9 +25,11 @@ module PoiseMonit
     # @since 1.0.0
     module MonitService
       # Values from `monit status` that mean the service is disabled.
-      DISABLED_STATUSES = Set.new(['Not monitored', 'Initializing'])
+      DISABLED_STATUSES = /^Not monitored$/
       # Values from `monit status` that mean the service is running.
-      RUNNING_STATUSES = Set.new(['Accessible', 'Running', 'Online with all services', 'Status ok', 'UP'])
+      RUNNING_STATUSES = /^(Accessible|Running|Online with all services|Status ok|UP)$/
+      # Value from monit action subcommands that mean the service doesn't exist.
+      NO_SERVICE_ERROR = /There is no service/
 
       # A `monit_service` resource to control Monit-based services.
       #
@@ -78,13 +80,19 @@ module PoiseMonit
               r.running(false)
             else
               Chef::Log.debug("[#{new_resource}] Checking status for #{new_resource.service_name}")
-              status = /^\s*status\s+(\w+)$/ =~ monit_shell_out!('status', wait_for_output: 'Process').stdout && $1
+              status = find_monit_status
               Chef::Log.debug("[#{new_resource}] Status is #{status.inspect}")
-              if DISABLED_STATUSES.include?(status)
+              case status
+              when /^Does not exist/
+                # It is monitored but we don't know the status yet, assume the
+                # worst (run start and stop always).
+                r.enabled(true)
+                r.running(self.action != :start)
+              when DISABLED_STATUSES
                 r.enabled(false)
                 # It could be running, but we don't know.
                 r.running(false)
-              elsif RUNNING_STATUSES.include?(status)
+              when RUNNING_STATUSES
                 r.enabled(true)
                 r.running(true)
               else
@@ -106,7 +114,11 @@ module PoiseMonit
             Chef::Log.debug("[#{new_resource}] Config file #{new_resource.monit_config_path} does not exist, not trying to unmonitor")
             return
           end
-          monit_shell_out!('unmonitor', allowed_fail: 'There is no service')
+          monit_shell_out!('unmonitor') do |cmd|
+            # Command fails if it has an error and does not include the service
+            # error message.
+            cmd.error? && cmd.stdout !~ NO_SERVICE_ERROR && cmd.stderr !~ NO_SERVICE_ERROR
+          end
         end
 
         def start_service
@@ -118,34 +130,37 @@ module PoiseMonit
             Chef::Log.debug("[#{new_resource}] Config file #{new_resource.monit_config_path} does not exist, not trying to stop")
             return
           end
-          monit_shell_out!('stop', allowed_fail: 'There is no service')
+          monit_shell_out!('stop') do |cmd|
+            # Command fails if it has an error and does not include the service
+            # error message. Then check that it is really stopped.
+            cmd.error? && cmd.stdout !~ NO_SERVICE_ERROR && cmd.stderr !~ NO_SERVICE_ERROR
+          end
         end
 
         def restart_service
           monit_shell_out!('restart')
         end
 
-        def monit_shell_out!(monit_cmd, timeout: 20, wait: 1, wait_for_output: nil, allowed_fail: nil)
+        def find_monit_status
+          status_cmd = monit_shell_out!('status') do |cmd|
+            # Command fails if it has an error, does't have Process line, or
+            # does have Initializing.
+            cmd.error? || cmd.stdout !~ /Process/ || cmd.stdout =~ /Initializing/
+          end
+          /^\s*status\s+(\w.+)$/ =~ status_cmd.stdout && $1
+        end
+
+        def monit_shell_out!(monit_cmd, timeout: 20, wait: 1, &block)
           while true
-            cmd = shell_out([new_resource.parent.monit_binary, '-c', new_resource.parent.config_path, monit_cmd, new_resource.service_name])
-            # Check if we had an error, but allow errors with specific strings
-            # if one was requested. Then check if we had the required output.
-            # Yes this could be one big conditional, but it looks gross.
-            error = if cmd.error?
-              if allowed_fail && (cmd.stdout.include?(allowed_fail) || cmd.stderr.include?(allowed_fail))
-                false # Allowed failure
-              else
-                true # Normal failure
-              end
-            elsif wait_for_output && !(cmd.stdout.include?(wait_for_output) || cmd.stderr.include?(wait_for_output))
-              true # Didn't have requested output
-            else
-              false
-            end
-            # If there was an error, sleep and try again.
+            cmd_args = [new_resource.parent.monit_binary, '-c', new_resource.parent.config_path, monit_cmd, new_resource.service_name]
+            Chef::Log.debug("[#{new_resource}] Running #{cmd_args.join(' ')}")
+            cmd = shell_out(cmd_args)
+            error = block ? block.call(cmd) : cmd.error?
+            # If there was an error (or error-like output), sleep and try again.
             if error
               # We fell off the end of the timeout, doneburger.
               if timeout <= 0
+                Chef::Log.debug("[#{new_resource}] Timeout while running `monit #{monit_cmd}`")
                 # If there was a run error, raise that first.
                 cmd.error!
                 # Otherwise we just didn't have the requested output, which is fine.
