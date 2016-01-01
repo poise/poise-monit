@@ -118,34 +118,30 @@ One of `source` or `content` is required.
 
 ## Monit Providers
 
-### `binaries_bitbucket`
-
-The `binaries_bitbucket` provider supports installing Monit from static binaries
-mirrored to BitBucket. Only a few of the recent releases are mirrored, but these
-downloads are more reliable than from `mmonit.com`. This is the default provider
-if you are installing a version available from BitBucket.
-
-```ruby
-monit 'monit' do
-  provider :binaries_bitbucket
-  version '5.15'
-end
-```
-
 ### `binaries`
 
-The `binaries` provider supports installing Monit from static binaries hosted on
-`mmonit.com`. This server uses a very strict download count quota per IP, so
-expect 500 errors if aren't careful. This is the default if you
+The `binaries_bitbucket` provider supports installing Monit from static binaries
+mirrored to BitBucket. This is the default provider if you are installing on an
+OS that has binaries available.
 
 ```ruby
 monit 'monit' do
   provider :binaries
-  version '5.9'
 end
 ```
 
-**NOTE:** Due to the download quotas, this provider is not currently being tested.
+*NOTE:* If BitBucket is unavailable you can set the `url` provider option to
+`https://mmonit.com/monit/dist/binary/%{version}/monit-%{version}-%{machine_label}.tar.gz`
+to use downloads directly from `mmonit.com`, however this server has a relatively
+strict download quota system so this is not recommended.
+
+#### Provider Options
+
+* `path` – Path to install Monit to. *(default: /opt/monit-<version>)*
+* `retries` – Number of times to retry failed downloads. *(default: 5)*
+* `static_version` – Full version number for use in interpolation. *(default: automatic)*
+* `strip_components` – Value to pass to tar --strip-components. *(default: 1)*
+* `url` – URL template to download from. *(default: `https://bitbucket.org/tildeslash/monit/downloads/monit-%{version}-%{machine_label}.tar.gz`)*
 
 ### `system`
 

@@ -37,12 +37,12 @@ describe PoiseMonit::MonitProviders::Binaries do
   end
 
   context 'with no version' do
-    it_behaves_like 'binaries provider', 'monit-5.15', 'https://mmonit.com/monit/dist/binary/5.15/monit-5.15-linux-x64.tar.gz'
+    it_behaves_like 'binaries provider', 'monit-5.15', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.15-linux-x64.tar.gz'
   end # /context with no version
 
   context 'with version 5.14' do
     let(:monit_version) { '5.14' }
-    it_behaves_like 'binaries provider', 'monit-5.14', 'https://mmonit.com/monit/dist/binary/5.14/monit-5.14-linux-x64.tar.gz'
+    it_behaves_like 'binaries provider', 'monit-5.14', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.14-linux-x64.tar.gz'
   end # /context with version 5.14
 
   context 'with version 5.9 and no forced provider' do
@@ -53,32 +53,32 @@ describe PoiseMonit::MonitProviders::Binaries do
       end
     end
 
-    it_behaves_like 'binaries provider', 'monit-5.9', 'https://mmonit.com/monit/dist/binary/5.9/monit-5.9-linux-x64.tar.gz'
+    it_behaves_like 'binaries provider', 'monit-5.9', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.9-linux-x64.tar.gz'
   end # /context with version 5.9 and no forced provider
 
   context 'on CentOS 7' do
     let(:chefspec_options) { {platform: 'centos', version: '7.0'} }
-    it_behaves_like 'binaries provider', 'monit-5.15', 'https://mmonit.com/monit/dist/binary/5.15/monit-5.15-linux-x64.tar.gz'
+    it_behaves_like 'binaries provider', 'monit-5.15', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.15-linux-x64.tar.gz'
   end # /context on CentOS 7
 
   context 'on Fedora 18 (x86)' do
     let(:chefspec_options) { {platform: 'fedora', version: '18'} }
-    it_behaves_like 'binaries provider', 'monit-5.15', 'https://mmonit.com/monit/dist/binary/5.15/monit-5.15-linux-x86.tar.gz'
+    it_behaves_like 'binaries provider', 'monit-5.15', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.15-linux-x86.tar.gz'
   end # /context on Fedora 18 (x86)
 
   context 'on AIX 6' do
     let(:chefspec_options) { {platform: 'aix', version: '6.1'} }
-    it_behaves_like 'binaries provider', 'monit-5.15', 'https://mmonit.com/monit/dist/binary/5.15/monit-5.15-aix6.1-ppc.tar.gz'
+    it_behaves_like 'binaries provider', 'monit-5.15', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.15-aix6.1-ppc.tar.gz'
   end # /context on AIX 6
 
   context 'on Solaris 5.11' do
     let(:chefspec_options) { {platform: 'solaris2', version: '5.11'} }
-    it_behaves_like 'binaries provider', 'monit-5.15', 'https://mmonit.com/monit/dist/binary/5.15/monit-5.15-solaris-x64.tar.gz'
+    it_behaves_like 'binaries provider', 'monit-5.15', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.15-solaris-x64.tar.gz'
   end # /context on Solaris 5.11
 
   context 'on OS X 10.11.1' do
     let(:chefspec_options) { {platform: 'mac_os_x', version: '10.11.1'} }
-    it_behaves_like 'binaries provider', 'monit-5.15', 'https://mmonit.com/monit/dist/binary/5.15/monit-5.15-macosx-universal.tar.gz'
+    it_behaves_like 'binaries provider', 'monit-5.15', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.15-macosx-universal.tar.gz'
   end # /context on OS X 10.11.1
 
   context 'action :disable' do

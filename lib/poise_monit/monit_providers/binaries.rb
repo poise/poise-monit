@@ -32,7 +32,7 @@ module PoiseMonit
         name: 'monit',
         versions: %w{5.15},
         machines: %w{aix5.3-ppc aix6.1-ppc freebsd-x64 freebsd-x86 linux-x64 linux-x86 linux-arm macosx-universal openbsd-x64 openbsd-x86 solaris-sparc solaris-x64},
-        url: 'https://mmonit.com/monit/dist/binary/%{version}/monit-%{version}-%{machine_label}.tar.gz',
+        url: 'https://bitbucket.org/tildeslash/monit/downloads/monit-%{version}-%{machine_label}.tar.gz'
       )
 
       # Translation lookup for Chef/Ohai machine types vs. Monit packages.
