@@ -38,6 +38,11 @@ module PoiseMonit
         node.platform_family?('debian', 'rhel')
       end
 
+      # @api private
+      def self.default_inversion_options(node, resource)
+        {package: 'monit', no_epel: false}
+      end
+
       # Output value for the Monit binary we are installing.
       #
       # @return [String]
@@ -61,7 +66,7 @@ module PoiseMonit
           action :nothing
         end
 
-        package 'monit' do
+        package options['package'] do
           notifies :delete, init_file, :immediately
           if node.platform_family?('debian')
             options '-o Dpkg::Options::=--path-exclude=/etc/*'
@@ -71,7 +76,7 @@ module PoiseMonit
       end
 
       def uninstall_monit
-        package 'monit' do
+        package options['package'] do
           action(platform_family?('debian') ? :purge : :remove)
         end
       end

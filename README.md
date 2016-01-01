@@ -157,6 +157,11 @@ monit 'monit' do
 end
 ```
 
+#### Provider Options
+
+* `no_epel` – Do not try to enable EPEL on EL nodes. *(default: false)*
+* `package` – Package name to install. *(default: monit)*
+
 ### `dummy`
 
 The `dummy` provider supports using the `monit` resource with ChefSpec or other
