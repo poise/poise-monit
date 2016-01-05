@@ -142,12 +142,13 @@ module PoiseMonit
         end
 
         def find_monit_status
+          re = /^Process '#{new_resource.service_name}'\s+status\s+(\w.+)$/
           status_cmd = monit_shell_out!('status') do |cmd|
             # Command fails if it has an error, does't have Process line, or
             # does have Initializing.
-            cmd.error? || cmd.stdout !~ /Process/ || cmd.stdout =~ /Initializing/
+            cmd.error? || cmd.stdout !~ re || cmd.stdout =~ /Initializing/
           end
-          /^\s*status\s+(\w.+)$/ =~ status_cmd.stdout && $1
+          status_cmd.stdout =~ re && $1
         end
 
         def monit_shell_out!(monit_cmd, timeout: 20, wait: 1, &block)
