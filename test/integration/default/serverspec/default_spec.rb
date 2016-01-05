@@ -37,10 +37,16 @@ RSpec.shared_examples 'a monit_test' do |monit_name, base_port|
     end
   end
 
+  # Tests for direct monit commands.
   assert_file('version')
   assert_file('status') do
-    # its(:content) { is_expected.to start_with version } if version
+    its(:content) { is_expected.to include 'file_test' }
+    its(:content) { is_expected.to include 'process_test' }
   end
+
+  # Tests for monit_config and monit_service.
+  assert_file('check')
+  assert_file('pid')
 
   it_should_behave_like 'a poise_service_test', 'monit_'+monit_name, base_port, false
 end
@@ -53,10 +59,6 @@ describe 'system provider', unless: File.exist?('/no_system') do
   it_should_behave_like 'a monit_test', 'system', 6000
 end
 
-# describe 'binaries provider', unless: File.exist?('/no_binaries') do
-#   it_should_behave_like 'a monit_test', 'binaries', 7000
-# end
-
-describe 'binaries_bitbucket provider', unless: File.exist?('/no_binaries_bitbucket') do
-  it_should_behave_like 'a monit_test', 'binaries_bitbucket', 8000
+describe 'binaries provider', unless: File.exist?('/no_binaries') do
+  it_should_behave_like 'a monit_test', 'binaries', 7000
 end

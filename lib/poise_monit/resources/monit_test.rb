@@ -69,16 +69,40 @@ module PoiseMonit
         # @return [void]
         def action_run
           notifying_block do
+            # Make the test output root.
+            directory new_resource.path
+
             # Install Monit.
             r = monit new_resource.name do
               provider new_resource.monit_provider if new_resource.monit_provider
             end
 
             # Write out some config files.
-            # TODO
-
-            # Make the test output root.
-            directory new_resource.path
+            monit_config 'file_test' do
+              content <<-EOH
+CHECK FILE file_test PATH #{new_resource.path}/check
+  start = "/usr/bin/touch #{new_resource.path}/check"
+EOH
+              parent r
+            end
+            file "#{new_resource.path}/service" do
+              content <<-EOH
+#!/bin/bash
+nohup /bin/bash -c 'echo $$ >> #{new_resource.path}/pid; while sleep 1; do true; done' &
+EOH
+              mode '700'
+            end
+            monit_config 'process_test' do
+              content <<-EOH
+check process process_test with pidfile #{new_resource.path}/pid
+  start program = "#{new_resource.path}/service"
+EOH
+              parent r
+            end
+            monit_service "process_test" do
+              action [:enable, :start]
+              parent r
+            end
 
             # Run some monit commands.
             execute "#{r.monit_binary} -V -c '#{r.config_path}' > #{new_resource.path}/version"
@@ -88,7 +112,7 @@ module PoiseMonit
             poise_service_test "monit_#{new_resource.name}" do
               base_port new_resource.base_port
               service_provider :monit
-              service_options 'parent' => r
+              service_options parent: r
             end
           end
         end
