@@ -56,7 +56,7 @@ describe 'default' do
 end
 
 # Wait at least the default daemon interval.
-Kernel.sleep 180
+Kernel.sleep 120
 
 describe 'system provider', unless: File.exist?('/no_system') do
   it_should_behave_like 'a monit_test', 'system', 6000
