@@ -85,6 +85,10 @@ CHECK FILE file_test PATH #{new_resource.path}/check
 EOH
               parent r
             end
+            monit_service 'file_test' do
+              action :enable
+              parent r
+            end
             file "#{new_resource.path}/service" do
               content <<-EOH
 #!/bin/bash
