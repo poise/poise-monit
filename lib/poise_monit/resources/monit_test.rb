@@ -81,7 +81,7 @@ module PoiseMonit
             monit_config 'file_test' do
               content <<-EOH
 CHECK FILE file_test PATH #{new_resource.path}/check
-  start = "/usr/bin/touch #{new_resource.path}/check"
+  start = "/bin/touch #{new_resource.path}/check"
 EOH
               parent r
             end
