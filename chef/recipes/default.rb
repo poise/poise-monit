@@ -14,4 +14,9 @@
 # limitations under the License.
 #
 
-monit 'monit'
+monit 'monit' do
+  node['poise-monit']['recipe'].each do |key, value|
+    # Skip nils, use false if you want to disable something.
+    send(key, value) unless value.nil?
+  end
+end

@@ -20,3 +20,18 @@ default['poise-monit']['default_recipe'] = 'poise-monit'
 # Default inversion options.
 default['poise-monit']['provider'] = 'auto'
 default['poise-monit']['options'] = {}
+
+# Attributes for recipe[poise-monit]. All values are nil because the actual
+# defaults live in the resource.
+default['poise-monit']['recipe']['daemon_interval'] = nil
+default['poise-monit']['recipe']['event_slots'] = nil
+default['poise-monit']['recipe']['httpd_port'] = nil
+default['poise-monit']['recipe']['httpd_password'] = nil
+default['poise-monit']['recipe']['httpd_username'] = nil
+default['poise-monit']['recipe']['group'] = nil
+default['poise-monit']['recipe']['logfile'] = nil
+default['poise-monit']['recipe']['owner'] = nil
+default['poise-monit']['recipe']['path'] = nil
+default['poise-monit']['recipe']['pidfile'] = nil
+default['poise-monit']['recipe']['var_path'] = nil
+default['poise-monit']['recipe']['version'] = nil
