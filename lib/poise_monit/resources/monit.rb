@@ -99,7 +99,7 @@ module PoiseMonit
         # @!attribute var_path
         #   Path the Monit state directory. Default is /var/lib/monit.
         #   @return [String]
-        attribute(:var_path, kind_of: String, default: lazy { default_var_path })
+        attribute(:var_path, kind_of: [String, NilClass, FalseClass], default: lazy { default_var_path })
         # @!attribute version
         #   Version of Monit to install.
         #   @return [String, nil, false]
