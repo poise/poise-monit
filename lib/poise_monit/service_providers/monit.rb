@@ -56,7 +56,7 @@ module PoiseMonit
               r.parent
             rescue Poise::Error
               # Use the default recipe to give us a parent the next time we ask.
-              include_recipe('poise-monit')
+              include_recipe(node['poise-monit']['default_recipe'])
             end
           end
           # Set some params on the service resource.

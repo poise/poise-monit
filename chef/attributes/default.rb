@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+# Recipe to include when a parent is needed for poise_service.
+default['poise-monit']['default_recipe'] = 'poise-monit'
+
 # Default inversion options.
 default['poise-monit']['provider'] = 'auto'
 default['poise-monit']['options'] = {}
