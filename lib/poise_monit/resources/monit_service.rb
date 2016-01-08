@@ -58,7 +58,7 @@ module PoiseMonit
         # Lie about supports.
         # @api private
         def supports(arg={})
-          {restart: true, reload: true}
+          {restart: true}
         end
       end
 
