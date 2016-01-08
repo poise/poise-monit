@@ -31,6 +31,11 @@ module PoiseMonit
       # Value from monit action subcommands that mean the service doesn't exist.
       NO_SERVICE_ERROR = /There is no service/
 
+      # Default time to wait for a monit command to succeed.
+      DEFAULT_TIMEOUT = 20
+      # Default time to sleep between tries.
+      DEFAULT_WAIT = 1
+
       # A `monit_service` resource to control Monit-based services.
       #
       # @provides monit_service
@@ -152,7 +157,7 @@ module PoiseMonit
           status_cmd.stdout =~ re && $1
         end
 
-        def monit_shell_out!(monit_cmd, timeout: 20, wait: 1, &block)
+        def monit_shell_out!(monit_cmd, timeout: DEFAULT_TIMEOUT, wait: DEFAULT_WAIT, &block)
           while true
             cmd_args = [new_resource.parent.monit_binary, '-c', new_resource.parent.config_path, monit_cmd, new_resource.service_name]
             Chef::Log.debug("[#{new_resource}] Running #{cmd_args.join(' ')}")
