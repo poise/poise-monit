@@ -88,6 +88,10 @@ module PoiseMonit
               status = find_monit_status
               Chef::Log.debug("[#{new_resource}] Status is #{status.inspect}")
               case status
+              when nil, false
+                # Unable to find a status at all.
+                r.enabled(false)
+                r.running(false)
               when /^Does not exist/
                 # It is monitored but we don't know the status yet, assume the
                 # worst (run start and stop always).
