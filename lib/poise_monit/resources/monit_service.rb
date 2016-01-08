@@ -156,7 +156,7 @@ module PoiseMonit
           while true
             cmd_args = [new_resource.parent.monit_binary, '-c', new_resource.parent.config_path, monit_cmd, new_resource.service_name]
             Chef::Log.debug("[#{new_resource}] Running #{cmd_args.join(' ')}")
-            cmd = shell_out(cmd_args)
+            cmd = poise_shell_out(cmd_args, user: new_resource.parent.owner, group: new_resource.parent.group)
             error = block ? block.call(cmd) : cmd.error?
             # If there was an error (or error-like output), sleep and try again.
             if error
