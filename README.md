@@ -14,7 +14,7 @@ A [Chef](https://www.chef.io/) cookbook to manage [Monit](https://mmonit.com/mon
 To install Monit and configure a mail server:
 
 ```ruby
-include_recipe 'monit'
+include_recipe 'poise-monit'
 
 monit_config 'mailconfig' do
   content <<-EOH
@@ -34,6 +34,32 @@ poise_service 'apache2' do
   provider :monit
   options :monit, checks: 'if failed host localhost port 80 protocol HTTP request "/" then restart'
 end
+```
+
+## Recipes
+
+* `poise-monit::default` – Install Monit.
+
+## Attributes
+
+* `node['poise-monit']['default_recipe']` – Recipe used by the `poise_service`
+  provider to install Monit if not already available. *(default: poise-monit)*
+* `node['pose-monit']['provider']` – Default provider for `monit` resource
+  instances. *(default: auto)*
+* `node['poise-monit']['recipe'][*]` – All subkeys of `'recipe'` will be passed
+  as properties to the `monit` resource before installation.
+
+For example, the `poise-monit` recipe can be customized by setting:
+
+```ruby
+override_attributes({
+  'poise-monit' => {
+    'recipe' => {
+      'daemon_interval' => 60,
+      'event_slots' => 0,
+    }
+  }
+})
 ```
 
 ## Resources
