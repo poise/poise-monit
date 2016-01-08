@@ -20,39 +20,278 @@ describe PoiseMonit::Resources::MonitService do
   let(:parent_resource) { PoiseMonit::Resources::Monit::Resource.new('monit', chef_run.run_context) }
   let(:test_resource) { described_class::Resource.new('myapp', chef_run.run_context).tap {|r| r.parent(parent_resource) } }
   let(:action) { nil }
+  let(:status) { nil }
   let(:test_provider) { test_resource.provider_for_action(action) }
   subject { test_provider.run_action }
-  def stub_cmd(cmd, error: false, stdout: '', stderr: '')
+  before do
+    # Give us some files to work with that won't hit the disk.
+    allow(File).to receive(:exist?).and_call_original
+    allow(File).to receive(:exist?).with('/exists').and_return(true)
+    allow(File).to receive(:exist?).with('/not_exists').and_return(false)
+    # Override these so our tests don't take forever.
+    stub_const('PoiseMonit::Resources::MonitService::DEFAULT_TIMEOUT', 1)
+    stub_const('PoiseMonit::Resources::MonitService::DEFAULT_WAIT', 0)
+    # Status for simple cases.
+    stub_status(status) if status
+  end
+  def stub_cmd(cmd, error: false, stdout: '', stderr: '', &block)
     fake_cmd = double("output of monit #{cmd}", error?: error, stdout: stdout, stderr: stderr)
     if error
       allow(fake_cmd).to receive(:error!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
     else
       allow(fake_cmd).to receive(:error!)
     end
-    expect(test_provider).to receive(:poise_shell_out).with(['/bin/monit', '-c', '/etc/monit/monitrc', cmd, 'myapp'], user: nil, group: nil).and_return(fake_cmd).ordered
+    matcher = receive(:poise_shell_out).with(['/bin/monit', '-c', '/etc/monit/monitrc', cmd, 'myapp'], user: nil, group: nil).and_return(fake_cmd).ordered
+    matcher = block.call(matcher) if block
+    expect(test_provider).to matcher
   end
   def stub_status(status)
     stub_cmd('status', stdout: "Process 'myapp'\n  status       #{status}")
   end
 
-
   describe 'action :enable' do
     let(:action) { :enable }
 
     context 'with status Not monitored' do
+      let(:status) { 'Not monitored' }
       it do
-        stub_status('Not monitored')
         stub_cmd('monitor')
         subject
       end
     end # /context with status Not monitored
 
     context 'with status Running' do
+      let(:status) { 'Running' }
       it do
-        stub_status('Running')
         # Does not call monitor.
         subject
       end
     end # /context with status Running
   end # /describe action :enable
+
+  describe 'action :disable' do
+    let(:action) { :disable }
+
+    context 'with status Running' do
+      let(:status) { 'Running' }
+      it do
+        stub_cmd('unmonitor')
+        subject
+      end
+    end # /context with status Running
+
+    context 'with status Not monitored' do
+      let(:status) { 'Not monitored' }
+      it do
+        # Does not call unmonitor.
+        subject
+      end
+    end # /context with status Running
+
+    context 'with error' do
+      let(:status) { 'Running' }
+      it do
+        stub_cmd('unmonitor', error: true)
+        stub_cmd('unmonitor')
+        subject
+      end
+    end # /context with error
+
+    context 'with There is no service' do
+      let(:status) { 'Running' }
+      it do
+        stub_cmd('unmonitor', error: true, stdout: 'There is no service')
+        subject
+      end
+    end # /context with There is no service
+
+    context 'with an existing config file' do
+      let(:status) { 'Running' }
+      before { test_resource.monit_config_path('/exists') }
+      it do
+        stub_cmd('unmonitor')
+        subject
+      end
+    end # /context with an existing config file
+
+    context 'with an non-existing config file' do
+      # Run the action directly because otherwise load_current_resource skips
+      # trying to disable anyway.
+      subject { test_provider.send(:disable_service) }
+      before { test_resource.monit_config_path('/not_exists') }
+      it do
+        # Does not call unmonitor.
+        subject
+      end
+    end # /context with an non-existing config file
+  end # /describe action :disable
+
+  describe 'action :start' do
+    let(:action) { :start }
+
+    context 'with status Not monitored' do
+      let(:status) { 'Not monitored' }
+      it do
+        stub_cmd('start')
+        stub_cmd('start')
+        subject
+      end
+    end # /context with status Not monitored
+
+    context 'with status Running' do
+      let(:status) { 'Running' }
+      it do
+        # Does not call start.
+        subject
+      end
+    end # /context with status Running
+
+    context 'with status Does not exist' do
+      let(:status) { 'Does not exist' }
+      it do
+        stub_cmd('start')
+        stub_cmd('start')
+        subject
+      end
+    end # /context with status Does not exist
+  end # /describe action :start
+
+  describe 'action :stop' do
+    let(:action) { :stop }
+
+    context 'with status Running' do
+      let(:status) { 'Running' }
+      it do
+        stub_cmd('stop')
+        subject
+      end
+    end # /context with status Running
+
+    context 'with status Not monitored' do
+      let(:status) { 'Not monitored' }
+      it do
+        # Does not call stop.
+        subject
+      end
+    end # /context with status Running
+
+    context 'with error' do
+      let(:status) { 'Running' }
+      it do
+        stub_cmd('stop', error: true)
+        stub_cmd('stop')
+        subject
+      end
+    end # /context with error
+
+    context 'with There is no service' do
+      let(:status) { 'Running' }
+      it do
+        stub_cmd('stop', error: true, stdout: 'There is no service')
+        subject
+      end
+    end # /context with There is no service
+
+    context 'with status Does not exist' do
+      let(:status) { 'Does not exist' }
+      it do
+        stub_cmd('stop')
+        subject
+      end
+    end # /context with status Does not exist
+
+    context 'with an existing config file' do
+      let(:status) { 'Running' }
+      before { test_resource.monit_config_path('/exists') }
+      it do
+        stub_cmd('stop')
+        subject
+      end
+    end # /context with an existing config file
+
+    context 'with an non-existing config file' do
+      # Run the action directly because otherwise load_current_resource skips
+      # trying to stop anyway.
+      subject { test_provider.send(:stop_service) }
+      before { test_resource.monit_config_path('/not_exists') }
+      it do
+        # Does not call stop.
+        subject
+      end
+    end # /context with an non-existing config file
+  end # /describe action :stop
+
+  describe 'action :restart' do
+    let(:action) { :restart }
+    let(:status) { 'Running' }
+
+    it do
+      stub_cmd('restart')
+      subject
+    end
+  end # /describe action :restart
+
+  describe 'load_current_resource' do
+    let(:action) { :enable }
+    subject { test_provider.load_current_resource }
+
+    context 'with status Running' do
+      let(:status) { 'Running' }
+      its(:enabled) { is_expected.to be true }
+      its(:running) { is_expected.to be true }
+    end # /context with status Running
+
+    context 'with status Online with all services' do
+      let(:status) { 'Online with all services' }
+      its(:enabled) { is_expected.to be true }
+      its(:running) { is_expected.to be true }
+    end # /context with status Online with all services
+
+    context 'with status Not monitored' do
+      let(:status) { 'Not monitored' }
+      its(:enabled) { is_expected.to be false }
+      its(:running) { is_expected.to be false }
+    end # /context with status Not monitored
+
+    context 'with status Error' do
+      let(:status) { 'Error' }
+      its(:enabled) { is_expected.to be true }
+      its(:running) { is_expected.to be false }
+    end # /context with status Error
+
+    context 'with a non-existing config file' do
+      before { test_resource.monit_config_path('/not_exists') }
+      its(:enabled) { is_expected.to be false }
+      its(:running) { is_expected.to be false }
+    end # /context with a non-existing config file
+
+    context 'with some Initializing' do
+      before do
+        stub_status('Initializing')
+        stub_status('Initializing')
+        stub_status('Initializing')
+        stub_status('Initializing')
+        stub_status('Running')
+      end
+      its(:enabled) { is_expected.to be true }
+      its(:running) { is_expected.to be true }
+    end # /context with some Initializing
+
+    context 'with an error' do
+      before do
+        stub_const('PoiseMonit::Resources::MonitService::DEFAULT_WAIT', 0.5)
+        stub_cmd('status', error: true) {|m| m.at_least(:twice) }
+      end
+      it { expect { subject }.to raise_error Mixlib::ShellOut::ShellCommandFailed }
+    end # /context with an error
+
+    context 'with an non-existent service' do
+      before do
+        stub_const('PoiseMonit::Resources::MonitService::DEFAULT_WAIT', 0.5)
+        stub_cmd('status') {|m| m.at_least(:twice) }
+      end
+      its(:enabled) { is_expected.to be false }
+      its(:running) { is_expected.to be false }
+    end # /context with an non-existent service
+  end # /describe load_current_resource
 end
