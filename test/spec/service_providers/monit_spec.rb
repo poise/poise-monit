@@ -55,4 +55,23 @@ describe PoiseMonit::ServiceProviders::Monit do
 
     it { is_expected.to create_monit_config('myapp').with(path: '/etc/monit-one/conf.d/myapp.conf') }
   end # /context with an explicit monit via options
+
+  context 'with default provider' do
+    recipe do
+      poise_service 'myapp' do
+        action :nothing
+      end
+    end
+    subject { chef_run.poise_service('myapp').provider_for_action(:enable) }
+    before do
+      begin
+        PoiseService::ServiceProviders::Base.remove_class_variable(:@@service_resource_hints)
+      rescue NameError
+        # This space left intentionally blank.
+      end
+      allow(Chef::Platform::ServiceHelpers).to receive(:service_resource_providers).and_return([:systemd, :upstart, :debian])
+    end
+
+    it { is_expected.to_not be_a described_class }
+  end # /context with default provider
 end

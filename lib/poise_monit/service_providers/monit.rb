@@ -28,6 +28,11 @@ module PoiseMonit
     class Monit < PoiseService::ServiceProviders::Sysvinit
       provides(:monit)
 
+      # Override the provides_auto? from Sysvinit. Always supported.
+      def self.provides_auto?(_node, _resource)
+        true
+      end
+
       # Override the default reload action because monit_service doesn't
       # support reload itself.
       def action_reload
