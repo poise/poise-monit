@@ -66,6 +66,13 @@ describe PoiseMonit::MonitProviders::Binaries do
     it_behaves_like 'binaries provider', 'monit-5.15', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.15-linux-x86.tar.gz'
   end # /context on Fedora 18 (x86)
 
+  context 'on AIX 5' do
+    # Fauxhai doesn't have AIX 5 data, so fake it.
+    let(:chefspec_options) { {platform: 'aix', version: '6.1'} }
+    before { chef_runner.node.automatic['kernel']['version'] = 5 }
+    it_behaves_like 'binaries provider', 'monit-5.15', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.15-aix5.3-ppc.tar.gz'
+  end # /context on AIX 5
+
   context 'on AIX 6' do
     let(:chefspec_options) { {platform: 'aix', version: '6.1'} }
     it_behaves_like 'binaries provider', 'monit-5.15', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.15-aix6.1-ppc.tar.gz'
