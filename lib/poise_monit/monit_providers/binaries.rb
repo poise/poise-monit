@@ -70,7 +70,14 @@ module PoiseMonit
         raw_kernel = (node['kernel']['name'] || 'unknown').downcase
         kernel = case raw_kernel
         when 'aix'
-          "aix#{node['kernel']['version']}.#{node['kernel']['release']}"
+          # Less correct than "aix#{node['kernel']['version']}.#{node['kernel']['release']}"
+          # but more likely to work on more systems. Notably we think the 6.1
+          # build should work on AIX 7 just fine.
+          if node['kernel']['version'].to_i <= 5
+            'aix5.3'
+          else
+            'aix6.1'
+          end
         when 'sunos'
           'solaris'
         when 'darwin'

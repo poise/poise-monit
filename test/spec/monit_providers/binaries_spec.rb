@@ -71,6 +71,11 @@ describe PoiseMonit::MonitProviders::Binaries do
     it_behaves_like 'binaries provider', 'monit-5.15', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.15-aix6.1-ppc.tar.gz'
   end # /context on AIX 6
 
+  context 'on AIX 7' do
+    let(:chefspec_options) { {platform: 'aix', version: '7.1'} }
+    it_behaves_like 'binaries provider', 'monit-5.15', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.15-aix6.1-ppc.tar.gz'
+  end # /context on AIX 7
+
   context 'on Solaris 5.11' do
     let(:chefspec_options) { {platform: 'solaris2', version: '5.11'} }
     it_behaves_like 'binaries provider', 'monit-5.15', 'https://bitbucket.org/tildeslash/monit/downloads/monit-5.15-solaris-x64.tar.gz'
