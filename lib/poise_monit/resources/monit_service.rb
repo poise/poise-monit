@@ -132,6 +132,9 @@ module PoiseMonit
 
         def start_service
           monit_shell_out!('start')
+          # No this isn't a typo, it's a ragefix to make older Monit (like
+          # Ubuntu' packages) always start things even right after an enable
+          # action. I am really unclear why running start twice fixes this :-(
           monit_shell_out!('start')
         end
 
