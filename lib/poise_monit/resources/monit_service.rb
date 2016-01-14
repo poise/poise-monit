@@ -132,7 +132,6 @@ module PoiseMonit
 
         def start_service
           monit_shell_out!('start')
-          monit_shell_out!('start')
         end
 
         def stop_service
