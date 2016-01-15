@@ -88,6 +88,10 @@ end
 
 * `service_name` – Name of the Monit instance. *(name attribute)*
 * `daemon_interval` – Number of seconds between service checks. *(default: 120)*
+* `daemon_delay` – Number of intervals to wait on startup before running service
+  checks. If unset or 0, no start delay is used. *(default: nil)*
+* `daemon_verbose` – Run the daemon in verbose mode for debugging. *(default:
+  log_level==debug)*
 * `event_slots` – Number of slots in the Monit event buffer. Set to 0 to disable
   event buffering, or -1 for an unlimited queue. *(default: 100)*
 * `httpd_port` – Port to listen on for Monit's HTTPD. If a path is specified, it
