@@ -163,7 +163,10 @@ module PoiseMonit
 
       # Configure properties for Monit service resource.
       def service_options(r)
-        r.command("#{monit_binary} -c #{new_resource.config_path} -I -d #{new_resource.daemon_interval}")
+        cmd = "#{monit_binary} -c #{new_resource.config_path} -I"
+        cmd << " -d #{new_resource.daemon_interval}" unless new_resource.daemon_delay
+        cmd << ' -v' if new_resource.daemon_verbose
+        r.command(cmd)
         r.provider_no_auto('monit')
         r.user(new_resource.owner)
       end

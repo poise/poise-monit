@@ -52,6 +52,17 @@ module PoiseMonit
         #   Number of seconds between service checks. Defaults to 120 seconds.
         #   @return [Integer]
         attribute(:daemon_interval, kind_of: Integer, default: 120)
+        # @!attribute daemon_delay
+        #   Number of intervals to wait on startup before running service checks.
+        #   If unset or 0, no start delay is used. Defaults to nil for backwards
+        #   compat.
+        #   @return [Integer, nil, false]
+        attribute(:daemon_delay, kind_of: [Integer, NilClass, FalseClass], default: nil)
+        # @!attribute daemon_verbose
+        #   Run the daemon in verbose mode for debugging. Defaults to true if
+        #   Chef is run with debug logging.
+        #   @return [Boolean]
+        attribute(:daemon_verbose, equal_to: [true, false], default: lazy { Chef::Log.level == :debug })
         # @!attribute event_slots
         #   Number of slots in the Monit event buffer. Set to 0 to disable
         #   event buffering, or -1 for an unlimited queue. Defaults to 100.

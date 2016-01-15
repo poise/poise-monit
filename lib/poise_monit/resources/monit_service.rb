@@ -51,7 +51,16 @@ module PoiseMonit
         provides(:monit_service)
         actions(:enable, :disable, :start, :stop, :restart)
 
+        # @!attribute monit_config_path
+        #   Optional path to a config file that corresponds to this service to
+        #   speed up some idempotence checks.
+        #   @return [String, nil, false]
         attribute(:monit_config_path, kind_of: [String, NilClass, FalseClass])
+        # @!attribute monit_verbose
+        #   Run monit commands in verbose mode for debugging. Defaults to true
+        #   if Chef is run with debug logging.
+        #   @return [Boolean]
+        attribute(:monit_verbose, equal_to: [true, false], default: lazy { Chef::Log.level == :debug })
 
         # Unsupported properties.
         %w{pattern reload_command priority timeout parameters run_levels}.each do |name|
@@ -79,7 +88,7 @@ module PoiseMonit
           super
           @current_resource = MonitService::Resource.new(new_resource.name).tap do |r|
             r.service_name(new_resource.service_name)
-            if new_resource.monit_config_path && !::File.exist?(new_resource.monit_config_path)
+            if defined?(new_resource.monit_config_path) && new_resource.monit_config_path && !::File.exist?(new_resource.monit_config_path)
               Chef::Log.debug("[#{new_resource}] Config file #{new_resource.monit_config_path} does not exist, not checking status")
               r.enabled(false)
               r.running(false)
@@ -119,7 +128,7 @@ module PoiseMonit
         end
 
         def disable_service
-          if new_resource.monit_config_path && !::File.exist?(new_resource.monit_config_path)
+          if defined?(new_resource.monit_config_path) && new_resource.monit_config_path && !::File.exist?(new_resource.monit_config_path)
             Chef::Log.debug("[#{new_resource}] Config file #{new_resource.monit_config_path} does not exist, not trying to unmonitor")
             return
           end
@@ -139,7 +148,7 @@ module PoiseMonit
         end
 
         def stop_service
-          if new_resource.monit_config_path && !::File.exist?(new_resource.monit_config_path)
+          if defined?(new_resource.monit_config_path) && new_resource.monit_config_path && !::File.exist?(new_resource.monit_config_path)
             Chef::Log.debug("[#{new_resource}] Config file #{new_resource.monit_config_path} does not exist, not trying to stop")
             return
           end
@@ -166,7 +175,9 @@ module PoiseMonit
 
         def monit_shell_out!(monit_cmd, timeout: DEFAULT_TIMEOUT, wait: DEFAULT_WAIT, &block)
           while true
-            cmd_args = [new_resource.parent.monit_binary, '-c', new_resource.parent.config_path, monit_cmd, new_resource.service_name]
+            cmd_args = [new_resource.parent.monit_binary]
+            cmd_args << '-v' if (defined?(new_resource.monit_verbose) && new_resource.monit_verbose) || Chef::Log.level == :debug
+            cmd_args.concat(['-c', new_resource.parent.config_path, monit_cmd, new_resource.service_name])
             Chef::Log.debug("[#{new_resource}] Running #{cmd_args.join(' ')}")
             cmd = poise_shell_out(cmd_args, user: new_resource.parent.owner, group: new_resource.parent.group)
             error = block ? block.call(cmd) : cmd.error?
