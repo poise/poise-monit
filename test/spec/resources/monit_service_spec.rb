@@ -24,6 +24,8 @@ describe PoiseMonit::Resources::MonitService do
   let(:test_provider) { test_resource.provider_for_action(action) }
   subject { test_provider.run_action }
   before do
+    # Force the default log level because it alters the tests.
+    chefspec_options.delete(:log_level)
     # Give us some files to work with that won't hit the disk.
     allow(File).to receive(:exist?).and_call_original
     allow(File).to receive(:exist?).with('/exists').and_return(true)
@@ -34,19 +36,19 @@ describe PoiseMonit::Resources::MonitService do
     # Status for simple cases.
     stub_status(status) if status
   end
-  def stub_cmd(cmd, error: false, stdout: '', stderr: '', &block)
+  def stub_cmd(cmd, error: false, stdout: '', stderr: '', verbose: false, &block)
     fake_cmd = double("output of monit #{cmd}", error?: error, stdout: stdout, stderr: stderr)
     if error
       allow(fake_cmd).to receive(:error!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
     else
       allow(fake_cmd).to receive(:error!)
     end
-    matcher = receive(:poise_shell_out).with(['/bin/monit', '-c', '/etc/monit/monitrc', cmd, 'myapp'], user: nil, group: nil).and_return(fake_cmd).ordered
+    matcher = receive(:poise_shell_out).with(['/bin/monit', (verbose ? '-v' : []), '-c', '/etc/monit/monitrc', cmd, 'myapp'].flatten, user: nil, group: nil).and_return(fake_cmd).ordered
     matcher = block.call(matcher) if block
     expect(test_provider).to matcher
   end
-  def stub_status(status)
-    stub_cmd('status', stdout: "Process 'myapp'\n  status       #{status}")
+  def stub_status(status, verbose: false)
+    stub_cmd('status', stdout: "Process 'myapp'\n  status       #{status}", verbose: verbose)
   end
 
   describe 'action :enable' do
@@ -67,6 +69,31 @@ describe PoiseMonit::Resources::MonitService do
         subject
       end
     end # /context with status Running
+
+    context 'with monit_verbose' do
+      before do
+        test_resource.monit_verbose(true)
+      end
+      it do
+        stub_status('Not monitored', verbose: true)
+        stub_cmd('monitor', verbose: true)
+        subject
+      end
+    end # /context with monit_verbose
+
+    context 'with log_level debug' do
+      before do
+        chefspec_options[:log_level] = :debug
+        # Don't actually show debug or info logs.
+        allow(Chef::Log).to receive(:info)
+        allow(Chef::Log).to receive(:debug)
+      end
+      it do
+        stub_status('Not monitored', verbose: true)
+        stub_cmd('monitor', verbose: true)
+        subject
+      end
+    end # /context with log_level debug
   end # /describe action :enable
 
   describe 'action :disable' do
