@@ -85,7 +85,9 @@ module PoiseMonit
         provides(:monit_service)
 
         def load_current_resource
-          super
+          # Only call super if it won't ruin things. Chef 12.4 and earlier didn't
+          # declare Provider::Service#load_current_resource.
+          super if self.class.superclass.instance_method(:load_current_resource).owner != Chef::Provider
           @current_resource = MonitService::Resource.new(new_resource.name).tap do |r|
             r.service_name(new_resource.service_name)
             if defined?(new_resource.monit_config_path) && new_resource.monit_config_path && !::File.exist?(new_resource.monit_config_path)
