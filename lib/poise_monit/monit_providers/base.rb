@@ -141,7 +141,7 @@ module PoiseMonit
           mode '600'
           notifies :reload, new_resource, :immediately
           owner new_resource.owner
-          verify "#{monit_binary} -t -c %{path}"
+          verify "#{monit_binary} -t -c #{Poise::Backports::VERIFY_PATH}" if defined?(verify)
         end
       end
 
