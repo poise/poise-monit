@@ -15,15 +15,7 @@
 #
 
 source 'https://supermarket.chef.io/'
-extension 'halite'
-
-# Force the rebuild every time for development.
-cookbook 'poise', gem: 'poise'
-cookbook 'poise-languages', gem: 'poise-languages'
-cookbook 'poise-service', gem: 'poise-service'
-cookbook 'poise-monit', gem: 'poise-monit'
 
 group :test do
-  cookbook 'poise-monit_test', path: 'test/cookbooks/poise-monit_test'
-  cookbook 'apt'
+  cookbook 'yum-epel'
 end
