@@ -1,8 +1,11 @@
 # Poise-Monit Changelog
 
-## v1.0.2
+## v1.1.0
 
-* Update for Monit 5.16.
+* Improve compatibility with Chef 12.4 and earlier.
+* New property for `monit` resource: `demon_delay` to control start delay.
+* More verbose output from Monit when Chef is running in debug mode.
+* Update binaries provider for Monit 5.16.
 
 ## v1.0.1
 
