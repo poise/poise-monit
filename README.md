@@ -223,6 +223,23 @@ end
 
 To set the `monit` provider as the global default, use [`poise-sevice-monit`](https://github.com/poise/poise-service-monit).
 
+## Upgrading From `monit`
+
+Upgrading from the older [`monit` cookbook](https://github.com/poise/poise-monit-compat)
+is relatively straightforward. The `node['monit']` attributes can either be
+converted to `node['poise-monit']['recipe']` if you want to use the default
+recipe, or you can invoke the `monit` resource in your own recipe code if needed.
+
+When switching cookbooks in-place on a server, make sure you check for any
+`conf.d/` config files created by the old cookbook. Notably `conf.d/compat.conf`
+may interfere with the configuration generation. You can remove it:
+
+```ruby
+monit_config 'compat' do
+  action :delete
+end
+```
+
 ## Sponsors
 
 Development sponsored by [Bloomberg](http://www.bloomberg.com/company/technology/).
