@@ -1,4 +1,4 @@
-check process <%= @service_resource.service_name %> with pidfile <%= @pid_file %>
+check process <%= @service_resource.service_name %> pidfile <%= @pid_file %>
   start program = "<%= @script_path %> start"
   stop program = "<%= @script_path %> stop"
   <%- Array(@options['checks']).each do |line| -%>
