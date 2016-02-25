@@ -15,6 +15,7 @@
 #
 
 require 'poise_monit/resources/monit'
+require 'poise_monit/resources/monit_check'
 require 'poise_monit/resources/monit_config'
 require 'poise_monit/resources/monit_service'
 

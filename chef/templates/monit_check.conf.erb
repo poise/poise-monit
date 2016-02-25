@@ -1,0 +1,13 @@
+CHECK <%= @new_resource.check_type.to_s.upcase %> <%= @new_resource.check_name %><% if @new_resource.with %> <%= @new_resource.with %><% end %>
+  <%- if @new_resource.start_program -%>
+  start program = "<%= @new_resource.start_program %>"
+  <%- end -%>
+  <%- if @new_resource.stop_program -%>
+  stop program = "<%= @new_resource.stop_program %>"
+  <%- end -%>
+  <%- Array(@new_resource.check).each do |check_line| -%>
+  <%= check_line !~ /^if/i ? 'IF ' : '' %><%= check_line.strip %>
+  <%- end -%>
+  <%- Array(@new_resource.extra).each do |extra_line| -%>
+  <%= extra_line.strip %>
+  <%- end -%>
