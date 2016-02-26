@@ -16,7 +16,7 @@
 
 require 'spec_helper'
 
-describe PoiseMonit::Resources::MonitCheck, :focus do
+describe PoiseMonit::Resources::MonitCheck do
   step_into(:monit_check)
   let(:systemctl) { nil }
   let(:service) { nil }
@@ -144,6 +144,36 @@ CHECK PROCESS httpd PIDFILE /var/run/httpd.pid
   GROUP www
 EOH
     end # /context with extra array
+
+    context 'with start_program' do
+      recipe do
+        monit 'monit'
+        monit_check 'httpd' do
+          start_program 'apachectl start'
+        end
+      end
+
+      it { is_expected.to render_file('/etc/monit/conf.d/httpd.conf').with_content(<<-EOH) }
+CHECK PROCESS httpd PIDFILE /var/run/httpd.pid
+  start program = "apachectl start"
+  stop program = "/etc/init.d/httpd stop"
+EOH
+    end # /context with start_program
+
+    context 'with stop_program' do
+      recipe do
+        monit 'monit'
+        monit_check 'httpd' do
+          stop_program 'apachectl stop'
+        end
+      end
+
+      it { is_expected.to render_file('/etc/monit/conf.d/httpd.conf').with_content(<<-EOH) }
+CHECK PROCESS httpd PIDFILE /var/run/httpd.pid
+  start program = "/etc/init.d/httpd start"
+  stop program = "apachectl stop"
+EOH
+    end # /context with stop_program
   end # /context action :create
 
   context 'action :delete' do
