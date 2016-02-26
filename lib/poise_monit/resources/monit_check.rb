@@ -37,18 +37,53 @@ module PoiseMonit
         provides(:monit_check)
 
         attribute('', template: true, default_source: 'monit_check.conf.erb')
+        # @!attribute check_type
+        #   Type of check. Not making this an explicit array to allow for new
+        #   check types in Monit without a cookbook release.
+        #   @return [String]
         attribute(:check_type, kind_of: String, default: 'process')
+        # @!attribute with
+        #   WITH-ish string for this check. This is the part that goes after the
+        #   check name. Set to false to disable. Defaults to an automatic PID
+        #   file for process checks and disabled for others.
+        #   @return [String, nil, false]
+        #   @example Process check
+        #     monit_check 'httpd' do
+        #        with 'PIDFILE /var/run/apache2.pid'
+        #     end
+        #   @example File check
+        #     monit_check 'httpd_log' do
+        #       check_type 'file'
+        #       with 'PATH /var/log/apache2/error.log'
+        #     end
         attribute(:with, kind_of: [String, NilClass, FalseClass], default: lazy { default_with })
+        # @!attribute start_program
+        #   Command to use to start the service for process checks. Set to false
+        #   disable. Defaults to an auto-detect using `systemctl`, `service` or
+        #   `/etc/init.d/$name`.
+        #   @return [String, nil, false]
         attribute(:start_program, kind_of: [String, NilClass, FalseClass], default: lazy { default_start_program })
+        # @!attribute stop_program
+        #   Command to use to stop the service for process checks. Set to false
+        #   disable. Defaults to an auto-detect using `systemctl`, `service` or
+        #   `/etc/init.d/$name`.
+        #   @return [String, nil, false]
         attribute(:stop_program, kind_of: [String, NilClass, FalseClass], default: lazy { default_stop_program })
+        # @!attribute check
+        #   Service health check or checks. `'IF '` will be prepended if not
+        #   given.
+        #   @return [String, Array<String>]
         attribute(:check, kind_of: [String, Array], default: [])
+        # @!attribute extra
+        #   Line or lines to be added to the service definition as is.
+        #   @return [String, Array<String>]
         attribute(:extra, kind_of: [String, Array], default: [])
 
         # An alias for #check_name to make things more semantically meaningful.
         alias_method :check_name, :config_name
 
         # An alias for #if_ to allow writing things like look more like Monit
-        # configuration files.
+        # configuration files. This can't be `if` because that's a keyword.
         #
         # @example
         #   monit_check 'httpd' do
@@ -115,6 +150,8 @@ module PoiseMonit
       # @provides monit_check
       class Provider < MonitConfig::Provider
         provides(:monit_check)
+
+        # This space left intentionally blank. All behaviors are in the base.
       end
     end
   end
