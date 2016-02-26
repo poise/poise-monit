@@ -59,14 +59,14 @@ module PoiseMonit
         attribute(:with, kind_of: [String, NilClass, FalseClass], default: lazy { default_with })
         # @!attribute start_program
         #   Command to use to start the service for process checks. Set to false
-        #   disable. Defaults to an auto-detect using `systemctl`, `service` or
-        #   `/etc/init.d/$name`.
+        #   to disable. Defaults to an auto-detect using `systemctl`, `service`
+        #   or `/etc/init.d/$name`.
         #   @return [String, nil, false]
         attribute(:start_program, kind_of: [String, NilClass, FalseClass], default: lazy { default_start_program })
         # @!attribute stop_program
         #   Command to use to stop the service for process checks. Set to false
-        #   disable. Defaults to an auto-detect using `systemctl`, `service` or
-        #   `/etc/init.d/$name`.
+        #   to disable. Defaults to an auto-detect using `systemctl`, `service`
+        #   or `/etc/init.d/$name`.
         #   @return [String, nil, false]
         attribute(:stop_program, kind_of: [String, NilClass, FalseClass], default: lazy { default_stop_program })
         # @!attribute check
