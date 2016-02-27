@@ -1,5 +1,9 @@
 # Poise-Monit Changelog
 
+## v1.2.0
+
+* New resource `monit_check` for more easily creating service checks.
+
 ## v1.1.0
 
 * Improve compatibility with Chef 12.4 and earlier.
