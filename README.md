@@ -146,6 +146,40 @@ end
 
 One of `source` or `content` is required.
 
+### `monit_check`
+
+The `monit_check` resource writes out a Monit configuration file for a service
+check. It is a subclass of `monit_config` and so inherits its actions and
+properties. It defaults to being a process check.
+
+```ruby
+monit_check 'httpd' do
+  check 'if failed port 80 protocol http request "/_status" then restart'
+  extra [
+    'every 5 cycles',
+    'group www',
+  ]
+end
+```
+
+#### Actions
+
+* `:create` – Create and manage the configuration file. *(default)*
+* `:delete` – Delete the configuration file.
+
+#### Properties
+
+* `check_type` – Type of check. *(default: process)*
+* `with` – WITH-ish string for this check. This is the part that goes after the
+  check name. Set to false to disable. *(default: PIDFILE /var/run/check_name.pid)*
+* `start_program` – Command to use to start the service for process checks. Set
+  to false disable. *(default: automatic)*
+* `stop_program` – Command to use to stop the service for process checks. Set
+  to false disable. *(default: automatic)*
+* `check` – Service health check or checks. `'IF '` will be prepended if not
+  given.
+* `extra` – Line or lines to be added to the service definition as is.
+
 ## Monit Providers
 
 ### `binaries`
