@@ -12,6 +12,7 @@ env:
   global:
   - USE_SYSTEM_GECODE=true
   - secure: l7GLeLWfqrrkxpc1R9gLasQP7W5MKZztoDGtTMs3itwfgmuA+HRuaex8vUDPxVHVKCdzu9Xhr56IqkVkDcXyasIyfNM2PKPW45qNLTx9dxes3ZnovNQgSuULD4YQOgVnJsSpM530zeNh+1j2tTiMrJW/+A0vCDc54L6FqsNu43XYT40wvRNR1q/DodvWhZFzPBJJ4CZSfjvQWdhXlR6r/vnqX7TeS0j8icBhA8V3nbGqT1YqblFYb6zkJTsf+SaV7XoSiprPp1tgaiKniT4wxGsLffkTnbY7biYC+ZnroUfVjxMoQqhl/0soO9bsJ6i6/6jpAFH9jruPDOnTPAXf+noSwJyxymGZZItvieXbTHsc7Pjg0hR0+4QeQEDISgXfLEZ1nyeAriAXyOXvZl36KQ2bCXEpS2x7xhhV2cbNTBB1q0RhfHb9PCKkyFgJF1M/AC3M/H9R7b4js+lKsJCJACpMKuvuiT1l8zxkl1zi7PnIqYFhBFqXZ9wD0/I7hLToehaPWrcCnjZiUfIAsoeV/O6wSqY4PcDRgBqGqaidoj3xNnhmhAGK9vbT1A+jW//QQQZJ2xFbPUvR4ThAk5h2jJEhdzd0YamqUBO2DGaXfp4Hf+VfAlGtDkcpvMf1E6tvJ0kX9l0FTOdAq5HwhDYS7tyJ8nBix9WKnFZbowmHB3Q=
+before_install: "gem install bundler"
 bundler_args: "--binstubs=$PWD/bin --jobs 3 --retry 3"
 script:
 - "./bin/rake travis"
