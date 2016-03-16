@@ -30,7 +30,7 @@ module PoiseMonit
       provides(:binaries)
       include PoiseLanguages::Static(
         name: 'monit',
-        versions: %w{5.16},
+        versions: %w{5.17.1},
         machines: %w{aix5.3-ppc aix6.1-ppc freebsd-x64 freebsd-x86 linux-x64 linux-x86 linux-arm macosx-universal openbsd-x64 openbsd-x86 solaris-sparc solaris-x64},
         url: 'https://bitbucket.org/tildeslash/monit/downloads/monit-%{version}-%{machine_label}.tar.gz'
       )
@@ -61,7 +61,7 @@ module PoiseMonit
       # Compute the machine label in the format Monit uses.
       #
       # @api private
-      def self.static_machine_label(node)
+      def self.static_machine_label(node, resource=nil)
         # Get the machine type in the format Monit uses.
         raw_machine = (node['kernel']['machine'] || 'unknown').downcase
         machine = MACHINE_ALIASES.fetch(raw_machine, raw_machine)
@@ -70,10 +70,14 @@ module PoiseMonit
         raw_kernel = (node['kernel']['name'] || 'unknown').downcase
         kernel = case raw_kernel
         when 'aix'
+          # Monit 5.16 and higher just use "aix". If we don't have a version,
+          # assume it's going to be the latest version.
+          if !resource || !resource.version  || ::Gem::Version.create(resource.version) >= ::Gem::Version.create('5.16')
+            'aix'
           # Less correct than "aix#{node['kernel']['version']}.#{node['kernel']['release']}"
           # but more likely to work on more systems. Notably we think the 6.1
           # build should work on AIX 7 just fine.
-          if node['kernel']['version'].to_i <= 5
+          elsif node['kernel']['version'].to_i <= 5
             'aix5.3'
           else
             'aix6.1'
