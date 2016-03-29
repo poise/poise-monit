@@ -1,5 +1,9 @@
 # Poise-Monit Changelog
 
+## v1.2.1
+
+* Fix static binary URLs for recent versions of Monit on AIX.
+
 ## v1.2.0
 
 * New resource `monit_check` for more easily creating service checks.
