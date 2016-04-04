@@ -238,6 +238,10 @@ monit 'monit' do
 end
 ```
 
+#### Provider Options
+
+* `monit_binary` – Path to the `monit` executable. *(default: /usr/bin/monit)*
+
 ## Service Provider
 
 The `monit` service provider is included to allow [`poise_service` resources](https://github.com/poise/poise-service)
