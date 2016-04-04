@@ -1,5 +1,9 @@
 # Poise-Monit Changelog
 
+## v1.3.0
+
+* More complete `:dummy` provider for weird install conditions.
+
 ## v1.2.1
 
 * Fix static binary URLs for recent versions of Monit on AIX.
