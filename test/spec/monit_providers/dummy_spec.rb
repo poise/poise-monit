@@ -29,7 +29,7 @@ describe PoiseMonit::MonitProviders::Dummy do
   describe '#monit_binary' do
     subject { monit_resource.monit_binary }
 
-    it { is_expected.to eq '/bin/monit' }
+    it { is_expected.to eq '/usr/bin/monit' }
   end # /describe #monit_binary
 
   describe 'action :enable' do

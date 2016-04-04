@@ -24,6 +24,15 @@ module PoiseMonit
     class Dummy < Base
       provides(:dummy)
 
+      # Manual overrides for dummy data.
+      #
+      # @api private
+      def self.default_inversion_options(node, resource)
+        super.merge({
+          monit_binary: '/usr/bin/monit',
+        })
+      end
+
       # Enable by default on ChefSpec.
       #
       # @api private
@@ -35,8 +44,7 @@ module PoiseMonit
       #
       # @return [String]
       def monit_binary
-        # Until I run into a counter example, probably always true.
-        '/bin/monit'
+        options['monit_binary']
       end
 
       private

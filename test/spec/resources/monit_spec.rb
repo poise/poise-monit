@@ -24,7 +24,7 @@ describe PoiseMonit::Resources::Monit do
     # Force the default log level because it alters the tests.
     chefspec_options.delete(:log_level)
     allow_any_instance_of(described_class::Resource).to receive(:shell_out).and_call_original
-    allow_any_instance_of(described_class::Resource).to receive(:shell_out).with(%w{/bin/monit -V}).and_return(monit_version_cmd)
+    allow_any_instance_of(described_class::Resource).to receive(:shell_out).with(%w{/usr/bin/monit -V}).and_return(monit_version_cmd)
   end
   def service_resource(name)
     chef_run.monit(name).provider_for_action(:enable).send(:service_resource)
@@ -56,7 +56,7 @@ EOH
     it { is_expected.to create_directory('/etc/monit/conf.d') }
     it { is_expected.to create_directory('/var/lib/monit') }
     it { is_expected.to create_directory('/var/lib/monit/events') }
-    it { expect(service_resource('monit').command).to eq '/bin/monit -c /etc/monit/monitrc -I -d 120' }
+    it { expect(service_resource('monit').command).to eq '/usr/bin/monit -c /etc/monit/monitrc -I -d 120' }
 
     context 'with a different name' do
       recipe do
@@ -84,7 +84,7 @@ EOH
       it { is_expected.to create_directory('/etc/monit-other/conf.d') }
       it { is_expected.to create_directory('/var/lib/monit-other') }
       it { is_expected.to create_directory('/var/lib/monit-other/events') }
-      it { expect(service_resource('other').command).to eq '/bin/monit -c /etc/monit-other/monitrc -I -d 120' }
+      it { expect(service_resource('other').command).to eq '/usr/bin/monit -c /etc/monit-other/monitrc -I -d 120' }
     end # /context with a different name
 
     context 'with daemon_delay 0' do
@@ -112,7 +112,7 @@ SET HTTPD UNIXSOCKET /var/run/monit.sock
 
 INCLUDE /etc/monit/conf.d/*
 EOH
-      it { expect(service_resource('monit').command).to eq '/bin/monit -c /etc/monit/monitrc -I' }
+      it { expect(service_resource('monit').command).to eq '/usr/bin/monit -c /etc/monit/monitrc -I' }
     end # /context with daemon_delay 0
 
     context 'with daemon_delay 5' do
@@ -141,7 +141,7 @@ SET HTTPD UNIXSOCKET /var/run/monit.sock
 
 INCLUDE /etc/monit/conf.d/*
 EOH
-      it { expect(service_resource('monit').command).to eq '/bin/monit -c /etc/monit/monitrc -I' }
+      it { expect(service_resource('monit').command).to eq '/usr/bin/monit -c /etc/monit/monitrc -I' }
     end # /context with daemon_delay 5
 
     context 'with 0 events slots' do
@@ -171,7 +171,7 @@ EOH
         end
       end
 
-      it { expect(service_resource('monit').command).to eq '/bin/monit -c /etc/monit/monitrc -I -d 120 -v' }
+      it { expect(service_resource('monit').command).to eq '/usr/bin/monit -c /etc/monit/monitrc -I -d 120 -v' }
     end # /context with daemon_verbose
 
     context 'with log_level debug' do
@@ -182,7 +182,7 @@ EOH
         allow(Chef::Log).to receive(:debug)
       end
 
-      it { expect(service_resource('monit').command).to eq '/bin/monit -c /etc/monit/monitrc -I -d 120 -v' }
+      it { expect(service_resource('monit').command).to eq '/usr/bin/monit -c /etc/monit/monitrc -I -d 120 -v' }
     end # /context with log_level debug
   end # /context action :enable
 end

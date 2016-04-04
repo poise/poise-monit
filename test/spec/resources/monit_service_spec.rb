@@ -43,7 +43,7 @@ describe PoiseMonit::Resources::MonitService do
     else
       allow(fake_cmd).to receive(:error!)
     end
-    matcher = receive(:poise_shell_out).with(['/bin/monit', (verbose ? '-v' : []), '-c', '/etc/monit/monitrc', cmd, 'myapp'].flatten, user: nil, group: nil).and_return(fake_cmd).ordered
+    matcher = receive(:poise_shell_out).with(['/usr/bin/monit', (verbose ? '-v' : []), '-c', '/etc/monit/monitrc', cmd, 'myapp'].flatten, user: nil, group: nil).and_return(fake_cmd).ordered
     matcher = block.call(matcher) if block
     expect(test_provider).to matcher
   end
