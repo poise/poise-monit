@@ -33,7 +33,7 @@ describe PoiseMonit::Resources::MonitService do
     # Override these so our tests don't take forever.
     override_attributes['poise-monit'] ||= {}
     override_attributes['poise-monit']['monit_service_timeout'] = 1
-    override_attributes['poise-monit']['monit_service_wait'] = 0
+    override_attributes['poise-monit']['monit_service_wait'] = 0.1
     # Status for simple cases.
     stub_status(status) if status
   end
