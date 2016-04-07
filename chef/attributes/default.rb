@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 
-# Amount of seconds for a the timeout for Monit to recognize a new service.
+# Seconds before timeout when registering a new service with Monit.
 default['poise-monit']['monit_service_timeout'] = 20
-# Amount of seconds to wait between attempts to start a new service.
+# Seconds to wait between attempts when registering a new service with Monit.
 default['poise-monit']['monit_service_wait'] = 1
 
 # Recipe to include when a parent is needed for poise_service.

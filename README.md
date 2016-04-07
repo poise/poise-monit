@@ -261,6 +261,13 @@ end
 
 To set the `monit` provider as the global default, use [`poise-sevice-monit`](https://github.com/poise/poise-service-monit).
 
+The service provider has two node attributes that can used for global tuning:
+
+* `node['poise-monit']['monit_service_timeout']` – Seconds before timeout when
+  registering a new service with Monit. *(default: 20)*
+* `node['poise-monit']['monit_service_wait']` – Seconds to wait between attempts
+  when registering a new service with Monit. *(default: 1)*
+
 ## Upgrading From `monit`
 
 Upgrading from the older [`monit` cookbook](https://github.com/poise/poise-monit-compat)

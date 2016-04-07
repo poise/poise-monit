@@ -1,5 +1,9 @@
 # Poise-Monit Changelog
 
+## v1.4.0
+
+* Allow tuning the timeout and wait for `monit_service` via node attributes.
+
 ## v1.3.0
 
 * More complete `:dummy` provider for weird install conditions.
