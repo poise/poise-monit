@@ -32,8 +32,8 @@ describe PoiseMonit::Resources::MonitService do
     allow(File).to receive(:exist?).with('/not_exists').and_return(false)
     # Override these so our tests don't take forever.
     override_attributes['poise-monit'] ||= {}
-    override_attributes['poise-monit']['monit_service_timeout'] = 1
-    override_attributes['poise-monit']['monit_service_wait'] = 0.005
+    override_attributes['poise-monit']['monit_service_timeout'] = 2
+    override_attributes['poise-monit']['monit_service_wait'] = 0.01
     # Status for simple cases.
     stub_status(status) if status
   end
