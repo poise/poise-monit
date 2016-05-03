@@ -1,5 +1,9 @@
 # Poise-Monit Changelog
 
+## v1.5.0
+
+* Allow overriding the template used for the `monit` service provider.
+
 ## v1.4.0
 
 * Allow tuning the timeout and wait for `monit_service` via node attributes.

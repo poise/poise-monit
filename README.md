@@ -268,6 +268,26 @@ The service provider has two node attributes that can used for global tuning:
 * `node['poise-monit']['monit_service_wait']` – Seconds to wait between attempts
   when registering a new service with Monit. *(default: 1)*
 
+### Options
+
+* `pid_file` – Path to PID file that the service command will create.
+* `pid_file_external` – If true, assume the service will create the PID file
+  itself. *(default: true if `pid_file` option is set)*
+* `template` – Override the default script template. If you want to use a
+  template in a different cookbook use `'cookbook:template'`.
+* `monit_template` – Override the default monit template. If you want to use a
+  template in a different cookbook use `'cookbook:template'`.
+* `command` – Override the service command.
+* `directory` – Override the service directory.
+* `environment` – Override the service environment variables.
+* `reload_signal` – Override the service reload signal.
+* `stop_signal` – Override the service stop signal.
+* `user` – Override the service user.
+* `never_restart` – Never try to restart the service.
+* `never_reload` – Never try to reload the service.
+* `script_path` – Override the path to the generated service script.
+* `parent` – Override the auto-detection of which `monit` resource to use.
+
 ## Upgrading From `monit`
 
 Upgrading from the older [`monit` cookbook](https://github.com/poise/poise-monit-compat)
