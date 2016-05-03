@@ -74,4 +74,16 @@ describe PoiseMonit::ServiceProviders::Monit do
 
     it { is_expected.to_not be_a described_class }
   end # /context with default provider
+
+  context 'with a monit_template option' do
+    recipe do
+      poise_service 'myapp' do
+        command 'myapp.rb'
+        provider :monit
+        options monit_template: 'mycook:mytemplate.erb'
+      end
+    end
+
+    it { is_expected.to create_monit_config('myapp').with(source: 'mytemplate.erb', cookbook: 'mycook') }
+  end # /context with a monit_template option
 end

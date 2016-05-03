@@ -94,10 +94,10 @@ module PoiseMonit
         _parent = service_resource.parent
         _script_path = script_path
         monit_config new_resource.service_name do
-          if options['monit_template']
+          if _options['monit_template']
             # If we have a template override, allow specifying a cookbook via
             # "cookbook:template".
-            parts = options['monit_template'].split(/:/, 2)
+            parts = _options['monit_template'].split(/:/, 2)
             if parts.length == 2
               source parts[1]
               cookbook parts[0]
