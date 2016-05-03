@@ -1,5 +1,9 @@
 # Poise-Monit Changelog
 
+## v1.5.1
+
+* Make the `monit_template` option from 1.5.0 actually work.
+
 ## v1.5.0
 
 * Allow overriding the template used for the `monit` service provider.
