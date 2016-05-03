@@ -94,9 +94,22 @@ module PoiseMonit
         _parent = service_resource.parent
         _script_path = script_path
         monit_config new_resource.service_name do
-          cookbook 'poise-monit'
+          if options['monit_template']
+            # If we have a template override, allow specifying a cookbook via
+            # "cookbook:template".
+            parts = options['monit_template'].split(/:/, 2)
+            if parts.length == 2
+              source parts[1]
+              cookbook parts[0]
+            else
+              source parts.first
+              cookbook new_resource.cookbook_name.to_s
+            end
+          else
+            source 'monit_service.conf.erb'
+            cookbook 'poise-monit'
+          end
           parent _parent
-          source 'monit_service.conf.erb'
           variables service_resource: new_resource, options: _options, pid_file: _pid_file, script_path: _script_path
           # Don't trigger a restart if the template doesn't already exist, this
           # prevents restarting on the run that first creates the service.
