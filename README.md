@@ -44,7 +44,7 @@ end
 
 * `node['poise-monit']['default_recipe']` – Recipe used by the `poise_service`
   provider to install Monit if not already available. *(default: poise-monit)*
-* `node['pose-monit']['provider']` – Default provider for `monit` resource
+* `node['poise-monit']['provider']` – Default provider for `monit` resource
   instances. *(default: auto)*
 * `node['poise-monit']['recipe'][*]` – All subkeys of `'recipe'` will be passed
   as properties to the `monit` resource before installation.
