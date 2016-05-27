@@ -1,5 +1,9 @@
 # Poise-Monit Changelog
 
+## v1.5.2
+
+* Compat fix for poise-service 1.3.1.
+
 ## v1.5.1
 
 * Make the `monit_template` option from 1.5.0 actually work.
