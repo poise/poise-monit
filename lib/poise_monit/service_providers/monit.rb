@@ -82,8 +82,10 @@ module PoiseMonit
 
       # Patch Monit behavior in to service creation.
       def create_service
-        super
-        create_monit_config
+        super.tap do |service_template|
+          service_template.cookbook('poise-service')
+          create_monit_config
+        end
       end
 
       # Create the Monit configuration file.
