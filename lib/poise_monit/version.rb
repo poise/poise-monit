@@ -16,5 +16,5 @@
 
 
 module PoiseMonit
-  VERSION = '1.5.2.pre'
+  VERSION = '1.5.2'
 end
