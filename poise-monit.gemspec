@@ -42,7 +42,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'berkshelf', '~> 4.0'
   spec.add_development_dependency 'poise-boiler', '~> 1.6'
 
-  # Leaving this hear but commented so it is clear this dependency has been
+  # Leaving this here but commented so it is clear this dependency has been
   # removed on purpose. It's going to be a rare thing, so don't pull it in.
   # spec.metadata['halite_dependencies'] = 'yum-epel'
 end
