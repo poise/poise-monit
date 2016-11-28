@@ -17,5 +17,5 @@
 source 'https://supermarket.chef.io/'
 
 group :test do
-  cookbook 'yum-epel'
+  cookbook 'yum-epel', '~> 1.0'
 end
