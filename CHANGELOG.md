@@ -1,5 +1,10 @@
 # Poise-Monit Changelog
 
+## v1.6.0
+
+* Update to `poise-languages` 2.0. None of the changed APIs are used in this
+  project so this is only a semver dependency bump.
+
 ## v1.5.2
 
 * Compat fix for poise-service 1.3.1.
