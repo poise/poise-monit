@@ -17,7 +17,11 @@
 require 'spec_helper'
 
 describe PoiseMonit::Resources::MonitService do
-  let(:parent_resource) { PoiseMonit::Resources::Monit::Resource.new('monit', chef_run.run_context) }
+  let(:parent_resource) do
+    PoiseMonit::Resources::Monit::Resource.new('monit', chef_run.run_context).tap do |r|
+      r.provider(:dummy)
+    end
+  end
   let(:test_resource) { described_class::Resource.new('myapp', chef_run.run_context).tap {|r| r.parent(parent_resource) } }
   let(:action) { nil }
   let(:status) { nil }

@@ -32,7 +32,9 @@ describe PoiseMonit::Resources::Monit do
 
   context 'action :enable' do
     recipe do
-      monit 'monit'
+      monit 'monit' do
+        provider :dummy
+      end
     end
 
     it { is_expected.to render_file('/etc/monit/monitrc').with_content(<<-EOH) }
@@ -60,7 +62,9 @@ EOH
 
     context 'with a different name' do
       recipe do
-        monit 'other'
+        monit 'other' do
+          provider :dummy
+        end
       end
 
       it { is_expected.to render_file('/etc/monit-other/monitrc').with_content(<<-EOH) }
@@ -90,6 +94,7 @@ EOH
     context 'with daemon_delay 0' do
       recipe do
         monit 'monit' do
+          provider :dummy
           daemon_delay 0
         end
       end
@@ -118,6 +123,7 @@ EOH
     context 'with daemon_delay 5' do
       recipe do
         monit 'monit' do
+          provider :dummy
           daemon_delay 5
         end
       end
@@ -147,6 +153,7 @@ EOH
     context 'with 0 events slots' do
       recipe do
         monit 'monit' do
+          provider :dummy
           event_slots 0
         end
       end
@@ -157,6 +164,7 @@ EOH
     context 'with -1 events slots' do
       recipe do
         monit 'monit' do
+          provider :dummy
           event_slots(-1)
         end
       end
@@ -167,6 +175,7 @@ EOH
     context 'with daemon_verbose' do
       recipe do
         monit 'monit' do
+          provider :dummy
           daemon_verbose true
         end
       end

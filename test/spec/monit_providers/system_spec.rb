@@ -69,6 +69,15 @@ describe PoiseMonit::MonitProviders::System do
     end
 
     it { expect(monit_resource.provider_for_action(:disable)).to be_a described_class }
-    it { is_expected.to remove_package('monit') }
+
+    context 'on Ubuntu' do
+      let(:chefspec_options) { {platform: 'ubuntu', version: '14.04'} }
+      it { is_expected.to purge_package('monit') }
+    end # /context on Ubuntu
+
+    context 'on CentOS' do
+      let(:chefspec_options) { {platform: 'centos', version: '7.0'} }
+      it { is_expected.to remove_package('monit') }
+    end # /context on CentOS
   end # /context action :disable
 end
