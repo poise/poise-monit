@@ -29,8 +29,9 @@ end
 
 dev_gem 'halite'
 dev_gem 'poise'
+dev_gem 'poise-archive'
 dev_gem 'poise-boiler'
-dev_gem 'poise-languages', github: 'poise/poise-languages'
+dev_gem 'poise-languages'
 dev_gem 'poise-profiler'
 dev_gem 'poise-service'
 
