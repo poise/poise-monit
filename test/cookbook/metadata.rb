@@ -16,4 +16,3 @@
 
 name 'poise-monit_test'
 depends 'poise-monit'
-depends 'yum-epel'

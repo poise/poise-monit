@@ -14,6 +14,41 @@
 # limitations under the License.
 #
 
+if platform_family?('rhel')
+  # Set up EPEL the simple way.
+  repo = file '/etc/yum.repos.d/epel.repo' do
+    mode '644'
+    content <<-EOH
+[epel]
+name=Extra Packages for #{node['platform_version'][0]} - $basearch
+enabled=1
+failovermethod=priority
+fastestmirror_enabled=0
+gpgcheck=1
+gpgkey=https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{node['platform_version'][0]}
+mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=epel-#{node['platform_version'][0]}&arch=$basearch
+EOH
+  end
+
+  execute "yum clean metadata epel" do
+    command "yum clean metadata --disablerepo=* --enablerepo=epel"
+    action :nothing
+    subscribes :run, repo, :immediately
+  end
+
+  execute "yum-makecache-epel" do
+    command "yum -q -y makecache --disablerepo=* --enablerepo=epel"
+    action :nothing
+    subscribes :run, repo, :immediately
+  end
+
+  ruby_block "yum-cache-reload-epel" do
+    block { Chef::Provider::Package::Yum::YumCache.instance.reload }
+    action :nothing
+    subscribes :create, repo, :immediately
+  end
+end
+
 require 'poise_monit/resources/monit_test'
 
 monit_test 'monit' do

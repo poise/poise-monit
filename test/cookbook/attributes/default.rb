@@ -15,3 +15,7 @@
 #
 
 override['poise-service']['provider'] = 'dummy'
+
+# We're installing this manually to bypass compat issues on old versions of the
+# yum-epel cookbook.
+override['poise-monit']['options']['no_epel'] = true
