@@ -27,6 +27,7 @@ describe PoiseMonit::ServiceProviders::Monit do
       end
     end
 
+    it { is_expected.to create_template('/etc/init.d/myapp').with(source: 'sysvinit.sh.erb', cookbook: 'poise-service') }
     it { is_expected.to create_monit_config('myapp').with(path: '/etc/monit/conf.d/myapp.conf') }
   end # /context with no default monit
 
@@ -39,6 +40,7 @@ describe PoiseMonit::ServiceProviders::Monit do
       end
     end
 
+    it { is_expected.to create_template('/etc/init.d/myapp').with(source: 'sysvinit.sh.erb', cookbook: 'poise-service') }
     it { is_expected.to create_monit_config('myapp').with(path: '/etc/monit-other/conf.d/myapp.conf') }
   end # /context with an existing default monit
 
@@ -53,6 +55,7 @@ describe PoiseMonit::ServiceProviders::Monit do
       end
     end
 
+    it { is_expected.to create_template('/etc/init.d/myapp').with(source: 'sysvinit.sh.erb', cookbook: 'poise-service') }
     it { is_expected.to create_monit_config('myapp').with(path: '/etc/monit-one/conf.d/myapp.conf') }
   end # /context with an explicit monit via options
 
@@ -75,6 +78,19 @@ describe PoiseMonit::ServiceProviders::Monit do
     it { is_expected.to_not be_a described_class }
   end # /context with default provider
 
+  context 'with a template option' do
+    recipe do
+      poise_service 'myapp' do
+        command 'myapp.rb'
+        provider :monit
+        options template: 'mycook:mytemplate.erb'
+      end
+    end
+
+    it { is_expected.to create_template('/etc/init.d/myapp').with(source: 'mytemplate.erb', cookbook: 'mycook') }
+    it { is_expected.to create_monit_config('myapp').with(source: 'monit_service.conf.erb', cookbook: 'poise-monit') }
+  end # /context with a template option
+
   context 'with a monit_template option' do
     recipe do
       poise_service 'myapp' do
@@ -84,6 +100,7 @@ describe PoiseMonit::ServiceProviders::Monit do
       end
     end
 
+    it { is_expected.to create_template('/etc/init.d/myapp').with(source: 'sysvinit.sh.erb', cookbook: 'poise-service') }
     it { is_expected.to create_monit_config('myapp').with(source: 'mytemplate.erb', cookbook: 'mycook') }
   end # /context with a monit_template option
 end

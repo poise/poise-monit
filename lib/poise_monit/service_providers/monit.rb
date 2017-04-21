@@ -89,7 +89,11 @@ module PoiseMonit
       # Patch Monit behavior in to service creation.
       def create_service
         super.tap do |service_template|
-          service_template.cookbook('poise-service')
+          if service_template.source == 'sysvinit.sh.erb' && service_template.cookbook == 'poise-monit'
+            # If we're using the default template, Poise's defined_in stuff will
+            # incorrectly point it at this cookbook, when it should be poise-service.
+            service_template.cookbook('poise-service')
+          end
           create_monit_config
         end
       end
