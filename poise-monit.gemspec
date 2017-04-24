@@ -26,7 +26,8 @@ Gem::Specification.new do |spec|
   spec.description = 'A Chef cookbook for managing the Monit process manager.'
   spec.summary = spec.description
   spec.homepage = 'https://github.com/poise/poise-monit'
-  spec.license = 'Apache 2.0'
+  spec.license = 'Apache-2.0'
+  spec.metadata['platforms'] = 'aix amazon arch centos debian dragonfly4 fedora freebsd gentoo mac_os_x omnios openbsd opensuse oracle raspbian redhat slackware smartos solaris2 suse ubuntu'
 
   spec.files = `git ls-files`.split($/)
   spec.executables = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
