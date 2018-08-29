@@ -50,7 +50,7 @@ module PoiseMonit
         super
       end
 
-      # The `enable` action for the `monit` resource.
+      # The `disable` action for the `monit` resource.
       #
       # @return [void]
       def action_disable
